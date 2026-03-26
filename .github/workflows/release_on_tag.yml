@@ -1,9 +1,9 @@
-name: "Create Release on Tag"
+name: Create Release on Tag
 
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 permissions:
   contents: write

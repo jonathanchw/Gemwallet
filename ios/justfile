@@ -15,15 +15,15 @@ bootstrap: install generate-stone
 install: install-rust install-typeshare install-toolchains install-swifttools
 
 install-rust:
-    just core install-rust
+    @cd ../core && just install-rust
 
 install-typeshare:
     @echo "==> Install typeshare-cli"
-    just core install-typeshare
+    @cd ../core && just install-typeshare
 
 install-toolchains:
     @echo "==> Install toolchains for uniffi"
-    @cd core && just gemstone install-ios-targets
+    @cd ../core && just gemstone install-ios-targets
 
 install-swifttools:
     @echo "==> Install SwiftGen and SwiftFormat"
@@ -140,7 +140,7 @@ test-ui-without-building: reset-simulator (_test-ui "test-without-building")
 
 # Run full upgrade test: build old version, create wallet, build current, verify wallet survives
 test-upgrade COMMIT:
-    @bash build-system/scripts/upgrade-test.sh {{COMMIT}}
+    @bash ./scripts/upgrade-test.sh {{COMMIT}}
 
 reset-simulator NAME=SIMULATOR_NAME:
     @echo "==> Resetting {{NAME}} simulator to clean state"
@@ -149,7 +149,7 @@ reset-simulator NAME=SIMULATOR_NAME:
     @xcrun simctl boot "{{NAME}}" 2>/dev/null || true
 
 _localize languages="":
-    @sh core/scripts/localize.sh ios Packages/Localization/Sources/Resources {{languages}}
+    @sh ../core/scripts/localize.sh ios Packages/Localization/Sources/Resources {{languages}}
     just generate-model
     just generate-swiftgen
 
@@ -161,7 +161,7 @@ generate: generate-model generate-swiftgen
 
 generate-model:
     @echo "==> Generate typeshare for iOS"
-    @cd core && cargo run --package generate --bin generate ios ../Packages
+    @cd ../core && cargo run --package generate --bin generate ios ../ios/Packages
 
 generate-swiftgen:
     @echo "==> SwiftGen assets and Localizable.strings"
@@ -174,5 +174,3 @@ generate-stone:
 
 bump TYPE="":
     @sh ./scripts/bump.sh {{TYPE}}
-
-mod core

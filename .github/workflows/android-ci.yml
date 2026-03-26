@@ -3,8 +3,20 @@ name: Android Tests
 on:
   push:
     branches: ["main"]
+    paths:
+      - "android/**"
+      - "core"
+      - "core/**"
+      - ".gitmodules"
+      - ".github/workflows/android-ci.yml"
   pull_request:
     branches: ["main"]
+    paths:
+      - "android/**"
+      - "core"
+      - "core/**"
+      - ".gitmodules"
+      - ".github/workflows/android-ci.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,7 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: recursive
 
       - name: Free disk space
         run: |
@@ -56,6 +68,7 @@ jobs:
           key: ndk-28.1.13356709-${{ runner.os }}
 
       - name: Setup NDK
+        working-directory: android
         run: just install-ndk
 
       - name: Cache AVD
@@ -73,6 +86,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
       - name: Build tests
+        working-directory: android
         run: just build-test
         env:
           GPR_USERNAME: ${{ github.actor }}
@@ -87,7 +101,7 @@ jobs:
           disk-size: 2048M
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: just test
+          script: cd android && just test
         env:
           GPR_USERNAME: ${{ github.actor }}
           GPR_TOKEN: ${{ secrets.GITHUB_TOKEN }}

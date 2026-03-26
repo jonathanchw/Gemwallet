@@ -24,7 +24,13 @@ Before sending a feature pull request, it's always better to open a issue first 
 ### Branch Model
 We use the [Fork and Pull](https://git-scm.com/book/en/v2/Git-Basics-Fork-and-Pull) model and [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) to work on this repository.
 
-Main branch is `master`. This is the branch that is used to work on the official release.
+Main branch is `main`.
+
+This repository is a monorepo:
+
+* iOS application code lives under `ios/`
+* Android application code lives under `android/`
+* Shared Rust core is the `core/` submodule
 
 ### Commit Convention
 We use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages. Please read the guide through if you aren't familiar with it already.

@@ -18,13 +18,14 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-REPO_URL_DEFAULT = "https://github.com/gemwalletcom/gem-android.git"
+REPO_URL_DEFAULT = "https://github.com/gemwalletcom/wallet.git"
 BUNDLE_TASK_DEFAULT = "clean :app:bundleGoogleRelease assembleUniversalRelease"
 APK_SUBDIR_DEFAULT = "app/build/outputs/apk/universal/release"
 BASE_IMAGE_DEFAULT = "ghcr.io/gemwalletcom/gem-android-base"
 APP_IMAGE_DEFAULT = "gem-android-app-verify"
 DOCKER_PLATFORM_DEFAULT = "linux/amd64"
 GRADLE_WORKERS_MAX_DEFAULT = "4"
+APP_WORKDIR_DEFAULT = "/root/wallet/android"
 
 INFO_EMOJI = "ℹ️"
 STEP_EMOJI = "➡️"
@@ -181,7 +182,16 @@ def ensure_base_image(base_image: str, base_tag: str, pull: bool, platform: str)
     run(["docker", "build", "--platform", platform, "-t", image_ref, "."], check=True, env=env)
 
 
-def build_app_image(tag: str, base_image: str, base_tag: str, gradle_task: str, map_id_seed: str, app_image: str, platform: str) -> None:
+def build_app_image(
+    tag: str,
+    repo_url: str,
+    base_image: str,
+    base_tag: str,
+    gradle_task: str,
+    map_id_seed: str,
+    app_image: str,
+    platform: str,
+) -> None:
     env = os.environ.copy()
     env["DOCKER_BUILDKIT"] = "1"
     env["DOCKER_DEFAULT_PLATFORM"] = env.get("DOCKER_DEFAULT_PLATFORM", platform)
@@ -195,6 +205,8 @@ def build_app_image(tag: str, base_image: str, base_tag: str, gradle_task: str, 
         app_image,
         "--build-arg",
         f"TAG={tag}",
+        "--build-arg",
+        f"REPO_URL={repo_url}",
         "--build-arg",
         "SKIP_SIGN=true",
         "--build-arg",
@@ -213,7 +225,17 @@ def build_app_image(tag: str, base_image: str, base_tag: str, gradle_task: str, 
     run(cmd, env=env)
 
 
-def build_outputs_in_container(app_image: str, container_name: str, gradle_task: str, map_id_seed: str, gradle_cache: Path, maven_cache: Path, platform: str, workers_max: str) -> None:
+def build_outputs_in_container(
+    app_image: str,
+    container_name: str,
+    app_workdir: str,
+    gradle_task: str,
+    map_id_seed: str,
+    gradle_cache: Path,
+    maven_cache: Path,
+    platform: str,
+    workers_max: str,
+) -> None:
     run(["docker", "rm", "-f", container_name], check=False)
     seed_env = map_id_seed or ""
     cmd = [
@@ -238,16 +260,16 @@ def build_outputs_in_container(app_image: str, container_name: str, gradle_task:
         app_image,
         "bash",
         "-lc",
-        "cd /root/gem-android && ./gradlew ${BUNDLE_TASK} --no-daemon --build-cache -Dorg.gradle.workers.max=${GRADLE_WORKERS_MAX}",
+        f"cd {app_workdir} && ./gradlew ${{BUNDLE_TASK}} --no-daemon --build-cache -Dorg.gradle.workers.max=${{GRADLE_WORKERS_MAX}}",
     ]
     run(cmd)
 
 
-def extract_apk_outputs(container_name: str, work_dir: Path, apk_subdir: str) -> Path:
+def extract_apk_outputs(container_name: str, work_dir: Path, app_workdir: str, apk_subdir: str) -> Path:
     dest = work_dir / "apk"
     shutil.rmtree(dest, ignore_errors=True)
     dest.mkdir(parents=True, exist_ok=True)
-    run(["docker", "cp", f"{container_name}:/root/gem-android/{apk_subdir}/.", str(dest)])
+    run(["docker", "cp", f"{container_name}:{app_workdir}/{apk_subdir}/.", str(dest)])
     apk = next(dest.rglob("*.apk"), None)
     if not apk:
         sys.stderr.write(f"Failed to locate APK inside {apk_subdir}\n")
@@ -335,6 +357,7 @@ def main() -> None:
     resolved_tag = resolve_ref(args.tag, repo_url)
     base_tag_file = Path(__file__).with_name("base_image_tag.txt")
     docker_platform = os.environ.get("VERIFY_DOCKER_PLATFORM", DOCKER_PLATFORM_DEFAULT)
+    app_workdir = os.environ.get("VERIFY_APP_WORKDIR", APP_WORKDIR_DEFAULT)
     if docker_platform:
         os.environ.setdefault("DOCKER_DEFAULT_PLATFORM", docker_platform)
 
@@ -376,11 +399,22 @@ def main() -> None:
             ensure_base_image(base_image, base_tag, pull_base, docker_platform)
             print(
                 f"{INFO_EMOJI} Build parameters: base_image={base_image}:{base_tag}, "
-                f"platform={docker_platform}, gradle_task='{gradle_task}', R8_MAP_ID_SEED='{map_id_seed}', workers_max={workers_max}"
+                f"platform={docker_platform}, gradle_task='{gradle_task}', repo_url={repo_url}, "
+                f"R8_MAP_ID_SEED='{map_id_seed}', workers_max={workers_max}"
             )
-            build_app_image(resolved_tag, base_image, base_tag, gradle_task, map_id_seed, app_image, docker_platform)
-            build_outputs_in_container(app_image, app_container, gradle_task, map_id_seed, gradle_cache, maven_cache, docker_platform, workers_max)
-            built_apk = extract_apk_outputs(app_container, work_dir, apk_subdir)
+            build_app_image(resolved_tag, repo_url, base_image, base_tag, gradle_task, map_id_seed, app_image, docker_platform)
+            build_outputs_in_container(
+                app_image,
+                app_container,
+                app_workdir,
+                gradle_task,
+                map_id_seed,
+                gradle_cache,
+                maven_cache,
+                docker_platform,
+                workers_max,
+            )
+            built_apk = extract_apk_outputs(app_container, work_dir, app_workdir, apk_subdir)
             shutil.copy2(built_apk, rebuilt_apk)
         finally:
             run(["docker", "rm", "-f", app_container], check=False)

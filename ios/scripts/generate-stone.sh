@@ -4,7 +4,7 @@ set -e
 
 CURRENT_DIR=$(dirname `realpath $0`)
 PROJ_PATH=${CURRENT_DIR}/../Gem.xcodeproj/project.pbxproj
-STONE_DIR=${CURRENT_DIR}/../core/gemstone
+STONE_DIR=${CURRENT_DIR}/../../core/gemstone
 PACKAGES_DIR=${CURRENT_DIR}/../Packages/Gemstone
 BUILD_MODE=$1
 

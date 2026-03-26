@@ -23,6 +23,7 @@ jobs:
 
       - name: Read base image tag
         id: base_tag
+        working-directory: android
         run: |
           TAG=$(cat "${{ env.BASE_IMAGE_TAG_FILE }}")
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
@@ -39,6 +40,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push base image
+        working-directory: android
         env:
           BASE_TAG: ${{ steps.base_tag.outputs.tag }}
         run: |

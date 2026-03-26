@@ -1,0 +1,50 @@
+name: iOS Unit Tests
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "ios/**"
+      - "core"
+      - "core/**"
+      - ".gitmodules"
+      - ".github/workflows/ios-ci.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "ios/**"
+      - "core"
+      - "core/**"
+      - ".gitmodules"
+      - ".github/workflows/ios-ci.yml"
+
+jobs:
+  unit_test:
+    name: Build and Test iPhone simulator
+    runs-on: [self-hosted, macOS]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        working-directory: ios
+        run: just install-toolchains
+
+      - name: Build Core
+        working-directory: ios
+        run: just generate-stone
+
+      - name: Resolve SPM Dependencies
+        working-directory: ios
+        run: just spm-resolve
+
+      - name: Build for Testing
+        working-directory: ios
+        run: just build-for-testing
+
+      - name: Unit Tests
+        working-directory: ios
+        run: just test-without-building

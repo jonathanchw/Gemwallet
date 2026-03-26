@@ -11,6 +11,15 @@ on:
         description: URL to the official APK (public or accessible with default token)
         required: true
         type: string
+      stage:
+        description: Verification stage to run
+        required: false
+        default: all
+        type: choice
+        options:
+          - all
+          - build
+          - diff
       base_image_tag:
         description: gem-android-base tag in GHCR
         required: false
@@ -33,6 +42,7 @@ jobs:
       DOCKER_BUILDKIT: 1
       DOCKER_DEFAULT_PLATFORM: linux/arm64
       VERIFY_BASE_IMAGE: ghcr.io/${{ github.repository_owner }}/gem-android-base
+      VERIFY_REPO_URL: https://github.com/${{ github.repository }}.git
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,6 +58,7 @@ jobs:
 
       - name: Read base image tag (default)
         id: base_tag
+        working-directory: android
         run: |
           DEFAULT_TAG=$(cat reproducible/base_image_tag.txt)
           echo "tag=${DEFAULT_TAG}" >> "$GITHUB_OUTPUT"
@@ -74,20 +85,23 @@ jobs:
           diffoscope --version || true
 
       - name: Create local.properties for CI
+        working-directory: android
         run: |
           echo "gpr.username=${{ github.actor }}" > local.properties
           echo "gpr.token=${{ secrets.GITHUB_TOKEN }}" >> local.properties
           echo "# Automatically generated for verify-apk workflow" >> local.properties
 
       - name: Download official APK
+        working-directory: android
         run: |
           curl -L --fail --retry 3 --retry-delay 5 "${{ inputs.official_apk_url }}" -o official.apk
 
       - name: Run verify_apk.py
+        working-directory: android
         env:
           VERIFY_BASE_TAG: ${{ inputs.base_image_tag != '' && inputs.base_image_tag || steps.base_tag.outputs.tag }}
         run: |
-          python reproducible/verify_apk.py "${{ inputs.tag }}" official.apk
+          python reproducible/verify_apk.py "${{ inputs.tag }}" official.apk --stage "${{ inputs.stage }}"
 
       - name: Upload artifacts
         if: always()
@@ -95,6 +109,6 @@ jobs:
         with:
           name: verify-apk-${{ inputs.tag }}
           path: |
-            artifacts/reproducible/${{ inputs.tag }}/*.apk
-            artifacts/reproducible/${{ inputs.tag }}/*.html
+            android/artifacts/reproducible/${{ inputs.tag }}/*.apk
+            android/artifacts/reproducible/${{ inputs.tag }}/*.html
           retention-days: 7

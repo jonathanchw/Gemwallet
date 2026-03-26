@@ -1,11 +1,22 @@
-name: Docker CI
+name: Android Docker CI
 
 on:
   push:
     branches: ["main"]
-  pull_request:
     paths:
-      - "**/Dockerfile"
+      - "android/**"
+      - "core"
+      - "core/**"
+      - ".gitmodules"
+      - ".github/workflows/android-docker.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "android/**"
+      - "core"
+      - "core/**"
+      - ".gitmodules"
+      - ".github/workflows/android-docker.yml"
   workflow_dispatch:
 
 concurrency:
@@ -45,6 +56,7 @@ jobs:
         uses: extractions/setup-just@v2
 
       - name: Create local.properties for CI
+        working-directory: android
         run: |
           echo "gpr.username=${{ github.actor }}" > local.properties
           echo "gpr.token=${{ secrets.GITHUB_TOKEN }}" >> local.properties
@@ -62,17 +74,21 @@ jobs:
           echo "Building ref: ${REF}"
 
       - name: Build app image
+        working-directory: android
         env:
           DOCKER_BUILDKIT: 1
           TAG: ${{ steps.build_ref.outputs.ref }}
+          REPO_URL: https://github.com/${{ github.repository }}.git
         run: |
           just build-app-image
 
       - name: Build app inside container
+        working-directory: android
         env:
           GRADLE_CACHE: ${{ runner.temp }}/gradle-cache
           MAVEN_CACHE: ${{ runner.temp }}/m2-cache
           TAG: ${{ steps.build_ref.outputs.ref }}
+          REPO_URL: https://github.com/${{ github.repository }}.git
         run: |
           mkdir -p "${GRADLE_CACHE}" "${MAVEN_CACHE}"
           GRADLE_CACHE="${GRADLE_CACHE}" MAVEN_CACHE="${MAVEN_CACHE}" \
