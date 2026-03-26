@@ -69,18 +69,22 @@ gpr.token=<your-github-token>
 
 ## Developer Shortcuts
 
-The repo root exposes a small wrapper `justfile`:
+The repo root exposes monorepo commands plus module access to each platform:
 
 ```bash
-just ios-bootstrap
-just ios-build
-just ios-test
-just android-bootstrap
-just android-build-test
-just android-test
+just build
+just generate
+just localize
+just bump patch
+just ios bootstrap
+just ios build-for-testing
+just ios test-without-building
+just android bootstrap
+just android build-test
+just android test
 ```
 
-Platform-specific commands remain in [`ios/justfile`](ios/justfile) and [`android/justfile`](android/justfile).
+Platform-specific commands remain available through the [`ios`](ios/justfile) and [`android`](android/justfile) just modules.
 
 ## Contributing
 

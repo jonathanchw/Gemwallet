@@ -1,3 +1,6 @@
+mod ios 'ios/justfile'
+mod android 'android/justfile'
+
 default:
     @just --list
 
@@ -7,27 +10,11 @@ setup-git:
     @git submodule update --init --recursive
     @git config submodule.recurse true
 
-ios-bootstrap:
-    @cd ios && just bootstrap
-
-ios-build:
+build:
     @cd ios && just build-for-testing
-
-ios-test:
-    @cd ios && just test-without-building
-
-android-bootstrap:
-    @cd android && just bootstrap
-
-android-build-test:
     @cd android && just build-test
 
-android-test:
-    @cd android && just test
-
-generate: generate-model generate-stone
-
-generate-model: generate-models
+generate: generate-models generate-stone
 
 generate-models:
     @cd ios && just generate-model
