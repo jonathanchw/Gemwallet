@@ -1,0 +1,158 @@
+package com.gemwallet.features.asset.presents.details
+
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.style.TextOverflow
+import com.gemwallet.android.domains.transaction.aggregates.TransactionDataAggregate
+import com.gemwallet.android.ext.TickerState
+import com.gemwallet.android.ext.getReserveBalanceUrl
+import com.gemwallet.android.model.ConfirmParams
+import com.gemwallet.android.ui.components.list_item.energyItem
+import com.gemwallet.android.ui.components.list_item.property.itemsPositioned
+import com.gemwallet.android.ui.components.list_item.transaction.transactionsList
+import com.gemwallet.android.ui.components.screen.Scene
+import com.gemwallet.android.ui.models.actions.AssetIdAction
+import com.gemwallet.android.ui.open
+import com.gemwallet.features.asset.presents.details.components.AssetDetailsMenu
+import com.gemwallet.features.asset.presents.details.components.AssetHeadItem
+import com.gemwallet.features.asset.presents.details.components.BalancePropertyItem
+import com.gemwallet.features.asset.presents.details.components.BannerItem
+import com.gemwallet.features.asset.presents.details.components.EmptyTransactionsItem
+import com.gemwallet.features.asset.presents.details.components.balancesHeader
+import com.gemwallet.features.asset.presents.details.components.manageAssetItem
+import com.gemwallet.features.asset.presents.details.components.network
+import com.gemwallet.features.asset.presents.details.components.price
+import com.gemwallet.features.asset.presents.details.components.status
+import com.gemwallet.features.asset.viewmodels.details.models.AssetInfoUIModel
+import com.gemwallet.features.asset.viewmodels.details.models.AssetInfoUIState
+import com.wallet.core.primitives.AssetId
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun AssetDetailsScene(
+    uiState: AssetInfoUIModel,
+    transactions: List<TransactionDataAggregate>,
+    priceAlertEnabled: Boolean,
+    priceAlertsCount: Int,
+    syncState: AssetInfoUIState.SyncState,
+    tickerState: TickerState?,
+    onRefresh: () -> Unit,
+    onCancel: () -> Unit,
+    onTransfer: AssetIdAction,
+    onReceive: (AssetId) -> Unit,
+    onBuy: (AssetId) -> Unit,
+    onSwap: (AssetId, AssetId?) -> Unit,
+    onTransaction: (txId: String) -> Unit,
+    onChart: (AssetId) -> Unit,
+    openNetwork: AssetIdAction,
+    onStake: (AssetId) -> Unit,
+    toggkePriceAlert: (AssetId) -> Unit,
+    onPriceAlerts: (AssetId) -> Unit,
+    onConfirm: (ConfirmParams) -> Unit,
+    onPin: () -> Unit,
+    onAdd: () -> Unit,
+    isOperationEnabled: Boolean,
+) {
+    val pullToRefreshState = rememberPullToRefreshState()
+    val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
+    val snackBar = remember { SnackbarHostState() }
+
+    Scene(
+        titleContent = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = uiState.name,
+                    maxLines = 1,
+                    overflow = TextOverflow.MiddleEllipsis
+                )
+            }
+        },
+        progress = null, // tickerState?.percentage?.let { { (it / 100.0).toFloat() } },
+        actions = {
+            AssetDetailsMenu(
+                uiState = uiState,
+                priceAlertEnabled = priceAlertEnabled,
+                snackBar = snackBar,
+                onPriceAlert = toggkePriceAlert,
+            )
+        },
+        onClose = onCancel,
+        snackbar = snackBar,
+    ) {
+        val isRefreshing = syncState == AssetInfoUIState.SyncState.Loading
+
+        PullToRefreshBox(
+            modifier = Modifier.fillMaxSize(),
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            state = pullToRefreshState,
+            indicator = {
+                PullToRefreshDefaults.Indicator(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    isRefreshing = isRefreshing,
+                    state = pullToRefreshState,
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            }
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    AssetHeadItem(
+                        uiState = uiState,
+                        isOperationEnabled = isOperationEnabled,
+                        onTransfer = onTransfer,
+                        onReceive = onReceive,
+                        onBuy = onBuy,
+                        onSwap = onSwap
+                    )
+                }
+                item { BannerItem(uiState.assetInfo, onStake, onConfirm) }
+                manageAssetItem(uiState.assetInfo, onPin, onAdd)
+                status(uiState.asset, uiState.assetInfo.rank)
+                price(uiState, priceAlertsCount, onChart = onChart, onPriceAlerts = onPriceAlerts)
+                network(uiState, openNetwork)
+                balancesHeader(uiState.accountInfoUIModel)
+                itemsPositioned(uiState.accountInfoUIModel.balances) { position, item ->
+                    BalancePropertyItem(
+                        title = item.type.label,
+                        balance = item.value,
+                        listPosition = position,
+                        onAction = when (item.type) {
+                            AssetInfoUIModel.BalanceViewType.Available -> null
+                            AssetInfoUIModel.BalanceViewType.Stake -> {
+                                { onStake(uiState.asset.id) }
+                            }
+
+                            AssetInfoUIModel.BalanceViewType.Reserved -> {
+                                {
+                                    uiState.asset.id.chain.getReserveBalanceUrl()
+                                        ?.let { uriHandler.open(context, it) }
+                                }
+                            }
+                        }
+                    )
+                }
+                energyItem(uiState.accountInfoUIModel.balanceMetadata)
+                item { EmptyTransactionsItem(transactions.size) }
+                transactionsList(transactions, onTransaction)
+            }
+        }
+    }
+}

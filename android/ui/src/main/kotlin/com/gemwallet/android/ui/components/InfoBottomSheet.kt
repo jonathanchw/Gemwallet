@@ -1,0 +1,314 @@
+package com.gemwallet.android.ui.components
+
+import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.gemwallet.android.domains.asset.getIconUrl
+import com.gemwallet.android.ext.asset
+import com.gemwallet.android.ui.R
+import com.gemwallet.android.ui.components.buttons.MainActionButton
+import com.gemwallet.android.ui.components.screen.ModalBottomSheet
+import com.gemwallet.android.ui.open
+import com.gemwallet.android.ui.theme.Spacer16
+import com.wallet.core.primitives.Asset
+import com.wallet.core.primitives.Chain
+import com.wallet.core.primitives.TransactionState
+import kotlinx.coroutines.launch
+import uniffi.gemstone.Config
+import uniffi.gemstone.DocsUrl
+
+sealed class InfoSheetEntity(
+    val icon: Any,
+    val badgeIcon: Any? = null,
+    @param:StringRes val title: Int,
+    @param:StringRes val description: Int,
+    val titleArgs: List<Any>? = null,
+    val descriptionArgs: List<Any>? = null,
+    val actionLabel: String? = null,
+    val action: (() -> Unit)? = null,
+    val infoUrl: (() -> String)? = null,
+) {
+    class NetworkFeeInfo(networkTitle: String, networkSymbol: String) : InfoSheetEntity(
+        icon = R.drawable.ic_network_fee,
+        title = R.string.transfer_network_fee,
+        description = R.string.info_network_fee_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.NetworkFees) },
+        descriptionArgs = listOf("**$networkTitle**", "**$networkSymbol**"),
+    )
+
+    class NetworkBalanceRequiredInfo(chain: Chain, value: String, actionLabel: String, action: () -> Unit) : InfoSheetEntity(
+        icon = chain.asset().getIconUrl(),
+        title = R.string.info_insufficient_network_fee_balance_title,
+        description = R.string.info_insufficient_network_fee_balance_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.NetworkFees) },
+        action = action,
+        actionLabel = actionLabel,
+        titleArgs = listOf(chain.asset().symbol),
+        descriptionArgs = listOf("**$value**", "**${chain.asset().name}**", "**${chain.asset().symbol}**"),
+    )
+
+    class MinimumAccountBalanceInfo(asset: Asset, value: String) : InfoSheetEntity(
+        icon = asset.getIconUrl(),
+        title = R.string.info_account_minimum_balance_title,
+        description = R.string.transfer_minimum_account_balance,
+        infoUrl = { Config().getDocsUrl(DocsUrl.AccountMinimalBalance) },
+        titleArgs = listOf(asset.symbol),
+        descriptionArgs = listOf("**$value**"),
+    )
+
+    class ReserveForFee(icon: Any) : InfoSheetEntity(
+        icon = icon,
+        title = R.string.info_stake_reserved_title,
+        description = R.string.info_stake_reserved_description,
+    )
+
+    class StakeLockTimeInfo(icon: Any) : InfoSheetEntity(
+        icon = icon,
+        badgeIcon = null,
+        title = R.string.stake_lock_time,
+        description = R.string.info_lock_time_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.StakingLockTime) },
+    )
+
+    class TransactionInfo(icon: Any, state: TransactionState) : InfoSheetEntity(
+        icon = icon,
+        badgeIcon = when (state) {
+            TransactionState.Pending -> R.drawable.transaction_state_pending
+            TransactionState.Confirmed -> R.drawable.transaction_state_success
+            TransactionState.Failed, TransactionState.Reverted -> R.drawable.transaction_state_error
+            TransactionState.InTransit -> R.drawable.transaction_state_pending
+        },
+        title = when (state) {
+            TransactionState.Pending -> R.string.transaction_status_pending
+            TransactionState.Confirmed -> R.string.transaction_status_confirmed
+            TransactionState.Failed -> R.string.transaction_status_failed
+            TransactionState.Reverted -> R.string.transaction_status_reverted
+            TransactionState.InTransit -> R.string.transaction_status_pending
+        },
+        description = when (state) {
+            TransactionState.Pending -> R.string.info_transaction_pending_description
+            TransactionState.Confirmed -> R.string.info_transaction_success_description
+            TransactionState.Failed, TransactionState.Reverted -> R.string.info_transaction_error_description
+            TransactionState.InTransit -> R.string.info_transaction_error_description
+        },
+        infoUrl = { Config().getDocsUrl(DocsUrl.TransactionStatus) },
+    )
+
+    object WatchWalletInfo : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        badgeIcon = R.drawable.watch_badge,
+        title = R.string.info_watch_wallet_title,
+        description = R.string.info_watch_wallet_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.WhatIsWatchWallet) },
+    )
+
+    object PriceImpactInfo : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.swap_price_impact,
+        description = R.string.info_price_impact_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.PriceImpact) },
+    )
+
+    object Slippage : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.swap_slippage,
+        description = R.string.info_slippage_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.Slippage) },
+    )
+
+    object AssetStatusSuspiciousInfo : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.asset_verification_suspicious,
+        description = R.string.info_asset_status_suspicious_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.TokenVerification) },
+    )
+
+    object AssetStatusUnverifiedInfo : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.asset_verification_unverified,
+        description = R.string.info_asset_status_unverified_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.TokenVerification) },
+    )
+
+    object OpenInterestInfo : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.info_open_interest_title,
+        description = R.string.info_open_interest_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.PerpetualsOpenInterest) },
+    )
+
+    object AutoCloseInfo : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.perpetual_auto_close,
+        description = R.string.info_perpetual_auto_close_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.PerpetualsAutoclose) },
+    )
+
+    object LiquidationPriceInfo : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.info_liquidation_price_title,
+        description = R.string.info_liquidation_price_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.PerpetualsLiquidationPrice) },
+    )
+
+    object FundingPayments : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.info_funding_payments_title,
+        description = R.string.info_funding_payments_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.PerpetualsFundingPayments) },
+    )
+
+    object FundingInfo : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.info_funding_rate_title,
+        description = R.string.info_funding_rate_description,
+        infoUrl = { Config().getDocsUrl(DocsUrl.PerpetualsFundingRate) },
+    )
+
+    object FullyDilutedValuation : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.info_fully_diluted_valuation_title,
+        description = R.string.info_fully_diluted_valuation_description,
+        infoUrl = null,
+    )
+
+    object CirculatingSupply : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.asset_circulating_supply,
+        description = R.string.info_circulating_supply_description,
+        infoUrl = null,
+    )
+
+    object TotalSupply : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.asset_total_supply,
+        description = R.string.info_total_supply_description,
+        infoUrl = null,
+    )
+
+    object MaxSupply : InfoSheetEntity(
+        icon = R.drawable.ic_splash,
+        title = R.string.info_max_supply_title,
+        description = R.string.info_max_supply_description,
+        infoUrl = null,
+    )
+}
+
+/// https://gist.github.com/binrebin/f3dad29956eb8dcb760a38ce86a9553b
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InfoBottomSheet(
+    item: InfoSheetEntity?,
+    onClose: (() -> Unit)
+) {
+    if (item == null) return
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    ModalBottomSheet(
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.background,
+        onDismissRequest = {
+            scope.launch { sheetState.hide() }.invokeOnCompletion { onClose.invoke() }
+        },
+    ) {
+        Column(
+            modifier = Modifier .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer16()
+            Box(
+                modifier = Modifier.size(120.dp),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape),
+                    model = item.icon,
+                    contentDescription = ""
+                )
+                if (item.badgeIcon != null) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .border(
+                                border = BorderStroke(
+                                    4.dp,
+                                    color = MaterialTheme.colorScheme.background
+                                ),
+                                shape = CircleShape,
+                            )
+                            .clip(CircleShape),
+                        model = item.badgeIcon,
+                        contentDescription = ""
+                    )
+                }
+            }
+            Spacer16()
+            Text(
+                text = parseMarkdownToAnnotatedString(
+                    markdown = item.titleArgs?.takeIf { it.isNotEmpty() }
+                        ?.let { stringResource(item.title, *it.toTypedArray()) }
+                        ?: stringResource(item.title)
+                ),
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Text(
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 32.dp),
+                text = parseMarkdownToAnnotatedString(
+                    markdown = item.descriptionArgs?.takeIf { it.isNotEmpty() }
+                        ?.let { stringResource(item.description, *it.toTypedArray()) }
+                        ?: stringResource(item.description)
+                ),
+                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+
+            if (item.action != null || item.infoUrl != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp, horizontal = 32.dp),
+                ) {
+                    MainActionButton(
+                        title = item.actionLabel ?: stringResource(R.string.common_learn_more),
+                        onClick = {
+                            scope.launch { sheetState.hide() }
+                                .invokeOnCompletion { onClose.invoke() }
+                            item.action?.let { it() }
+                                ?: item.infoUrl?.let { uriHandler.open(context, it()) }
+                        },
+                    )
+                }
+            }
+        }
+    }
+}

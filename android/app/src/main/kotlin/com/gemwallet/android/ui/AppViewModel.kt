@@ -1,0 +1,166 @@
+package com.gemwallet.android.ui
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.gemwallet.android.BuildConfig
+import com.gemwallet.android.cases.device.GetPushEnabled
+import com.gemwallet.android.cases.device.SwitchPushEnabled
+import com.gemwallet.android.data.repositoreis.config.UserConfig
+import com.gemwallet.android.data.repositoreis.session.SessionRepository
+import com.gemwallet.android.data.repositoreis.wallets.WalletsRepository
+import com.gemwallet.android.data.services.gemapi.GemApiClient
+import com.gemwallet.android.features.onboarding.OnboardingDest
+import com.gemwallet.android.model.Session
+import com.wallet.core.primitives.PlatformStore
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+@HiltViewModel
+class AppViewModel @Inject constructor(
+    private val sessionRepository: SessionRepository,
+    private val userConfig: UserConfig,
+    private val getPushEnabled: GetPushEnabled,
+    private val switchPushEnabled: SwitchPushEnabled,
+    private val walletsRepository: WalletsRepository,
+    private val gemApiClient: GemApiClient,
+) : ViewModel() {
+
+    private val state = MutableStateFlow(AppState())
+    val uiState = state.map { it.toUIState() }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AppUIState())
+
+    val askNotifications = combine(
+        userConfig.isAskNotifications(),
+        sessionRepository.session(),
+        getPushEnabled.getPushEnabled(),
+    ) { isAsk, session, pushEnabled ->
+        isAsk && session != null && !pushEnabled
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+
+    init {
+        viewModelScope.launch {
+            handleAppVersion()
+            rateAs()
+            sessionRepository.session().collectLatest {
+                onSession(it ?: return@collectLatest)
+            }
+        }
+    }
+
+    fun onSkip(version: String) = viewModelScope.launch {
+        userConfig.setAppVersionSkip(version)
+        state.update { it.copy(intent = AppIntent.None) }
+    }
+
+    fun onCancelUpdate() {
+        state.update { it.copy(intent = AppIntent.None) }
+    }
+
+    private suspend fun handleAppVersion() = withContext(Dispatchers.IO) {
+        if (BuildConfig.DEBUG) {
+            return@withContext
+        }
+        val lastRelease = runCatching {
+            gemApiClient.getConfig().releases
+                ?.filter {
+                    val versionFlavor = when (it.store) {
+                        PlatformStore.GooglePlay -> "google"
+                        PlatformStore.Fdroid -> "fdroid"
+                        PlatformStore.Huawei -> "huawei"
+                        PlatformStore.SolanaStore -> "solana"
+                        PlatformStore.SamsungStore -> "samsung"
+                        PlatformStore.ApkUniversal -> "universal"
+                        PlatformStore.AppStore -> it.store.string
+                        PlatformStore.Emerald -> "emerald"
+                        PlatformStore.Local -> "local"
+                    }
+                    BuildConfig.FLAVOR == versionFlavor
+                }
+                ?.firstOrNull()
+        }.getOrNull() ?: return@withContext
+
+        val skipVersion = userConfig.getAppVersionSkip().firstOrNull()
+        val lastVersion = lastRelease.version
+        userConfig.setLatestVersion(lastVersion)
+        if (lastVersion.compareTo(BuildConfig.VERSION_NAME) > 0 && skipVersion != lastVersion/* && current.store != PlatformStore.ApkUniversal*/) {
+            state.update { it.copy(intent = AppIntent.ShowUpdate, version = lastVersion) }
+        }
+    }
+
+    fun onNotificationsEnable() {
+        viewModelScope.launch(Dispatchers.IO) {
+            userConfig.stopAskNotifications()
+            switchPushEnabled.switchPushEnabled(
+                true,
+                walletsRepository.getAll().firstOrNull() ?: emptyList()
+            )
+        }
+    }
+
+    fun laterAskNotifications() {
+        viewModelScope.launch(Dispatchers.IO) {
+            userConfig.stopAskNotifications()
+        }
+    }
+
+    private fun rateAs() {
+        if (userConfig.getLaunchNumber() == 10) {
+            state.update { it.copy(intent = AppIntent.ShowReview) }
+        }
+        userConfig.increaseLaunchNumber()
+    }
+
+    private fun onSession(session: Session) {
+        state.update {
+            it.copy(session = session)
+        }
+    }
+
+    suspend fun getStartDestination(): String = withContext(Dispatchers.IO) {
+        if (sessionRepository.session().firstOrNull() != null) {
+            "/"
+        } else {
+            OnboardingDest.route
+        }
+    }
+
+    fun onReviewOpen() {
+        state.update { it.copy(intent = AppIntent.None) }
+    }
+}
+
+data class AppState(
+    val session: Session? = null,
+    val version: String = "",
+    val intent: AppIntent = AppIntent.None,
+) {
+    fun toUIState() = AppUIState(
+        session = session,
+        version = version,
+        intent = intent,
+    )
+}
+
+data class AppUIState(
+    val session: Session? = null,
+    val version: String = "",
+    val intent: AppIntent = AppIntent.None,
+)
+
+enum class AppIntent {
+    None,
+    ShowUpdate,
+    ShowReview,
+}

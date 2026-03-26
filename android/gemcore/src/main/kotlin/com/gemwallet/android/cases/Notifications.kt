@@ -1,0 +1,56 @@
+package com.gemwallet.android.cases
+
+import com.gemwallet.android.ext.toIdentifier
+import com.gemwallet.android.model.PushNotificationData
+import com.gemwallet.android.model.PushNotificationData.Asset
+import com.gemwallet.android.model.PushNotificationData.Swap
+import com.gemwallet.android.model.PushNotificationData.Transaction
+import com.gemwallet.android.serializer.jsonEncoder
+import com.wallet.core.primitives.PushNotificationAsset
+import com.wallet.core.primitives.PushNotificationReward
+import com.wallet.core.primitives.PushNotificationStake
+import com.wallet.core.primitives.PushNotificationSwapAsset
+import com.wallet.core.primitives.PushNotificationTransaction
+import com.wallet.core.primitives.PushNotificationTypes
+
+fun parseNotificationData(rawType: String?, rawData: String?): PushNotificationData? {
+    if (rawType.isNullOrEmpty() || rawData.isNullOrEmpty()) {
+        return null
+    }
+    val type = PushNotificationTypes.entries.firstOrNull { it.string == rawType } ?: return null
+    return try {
+        when (type) {
+            PushNotificationTypes.Transaction -> jsonEncoder.decodeFromString<PushNotificationTransaction>(rawData).let {
+                Transaction(
+                    transactionId = it.transaction.id,
+                    assetId = it.assetId,
+                    walletId = it.walletId,
+                )
+            }
+            PushNotificationTypes.PriceAlert,
+            PushNotificationTypes.BuyAsset,
+            PushNotificationTypes.Asset -> jsonEncoder.decodeFromString<PushNotificationAsset>(rawData).let {
+                Asset(
+                    assetId = it.assetId
+                )
+            }
+            PushNotificationTypes.SwapAsset -> jsonEncoder.decodeFromString<PushNotificationSwapAsset>(rawData).let {
+                Swap(
+                    fromAssetId = it.fromAssetId,
+                    toAssetId = it.toAssetId
+                )
+            }
+            PushNotificationTypes.Support,
+            PushNotificationTypes.Test -> null
+            PushNotificationTypes.Rewards -> jsonEncoder.decodeFromString<PushNotificationReward>(rawData).let {
+                PushNotificationData.Reward
+            }
+
+            PushNotificationTypes.Stake -> jsonEncoder.decodeFromString<PushNotificationStake>(rawData).let {
+                PushNotificationData.Stake(assetId = it.assetId.toIdentifier(), walletId = it.walletId)
+            }
+        }
+    } catch (_: Throwable) {
+        null
+    }
+}

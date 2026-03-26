@@ -1,0 +1,82 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin)
+    id("com.google.devtools.ksp")
+}
+
+android {
+    namespace = "com.gemwallet.android.data.repositoreis"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 28
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    tasks.withType<KotlinJvmCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+        }
+    }
+    buildFeatures {
+        buildConfig = true
+    }
+    packaging {
+        resources {
+            excludes += "META-INF/*"
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "/META-INF/LICENSE-notice.md"
+            excludes += "/META-INF/LICENSE.md"
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
+}
+
+dependencies {
+    implementation(project(":gemcore"))
+    implementation(project(":data:services:store"))
+    api(project(":data:services:remote-gem"))
+
+    // Wallet Connect
+    api(platform(libs.walletconnect.bom))
+    api(libs.walletconnect.core) {
+        exclude(group = "com.jakewharton.timber", module = "timber")
+    }
+    api(libs.walletconnect.web3wallet)
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    implementation(libs.datastore)
+
+    api(libs.ktor.core)
+    api(libs.ktor.cio)
+    api(libs.ktor.websocket)
+    api(libs.ktor.json)
+
+    implementation(libs.ktx.core)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.kotlinx.coroutines.android)
+}
