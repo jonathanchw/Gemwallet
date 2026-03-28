@@ -18,52 +18,53 @@
 - Keep test names short and descriptive
 - One behavior per test, small number of assertions
 
-```kotlin
-@Test
-fun calculatePriceImpact_highSlippage() {
-    val result = calculatePriceImpact(inputAmount, outputAmount)
-    assertEquals(expected, result)
-}
-```
-
 ### Instrumented Tests (`src/androidTest/kotlin/`)
 
 - Test database migrations, Room queries, and Android-specific behavior
 - Use `AndroidJUnit4` runner and `ApplicationProvider` for context
-- Use `MigrationTestHelper` for schema migration tests
+
+## Shared TestKit
+
+Reusable test data factories live in `:gemcore`'s `testFixtures` source set (`gemcore/src/testFixtures/kotlin/com/gemwallet/android/testkit/`). Use these instead of duplicating private `create*()` helpers in each test file.
+
+Consumer modules add: `testImplementation(testFixtures(project(":gemcore")))`
 
 ```kotlin
-@RunWith(AndroidJUnit4::class)
-class Migration_63_64Test {
-    @get:Rule
-    val helper = MigrationTestHelper(
-        InstrumentationRegistry.getInstrumentation(),
-        GemDatabase::class.java
-    )
+import com.gemwallet.android.testkit.mockAssetPriceInfo
 
-    @Test
-    fun migrate() {
-        // create db at old version, apply migration, verify schema
-    }
+@Test
+fun `day period uses 24h change`() {
+    val model = buildChartUIModel(
+        prices = listOf(ChartValue(timestamp = 1, value = 100.0f)),
+        priceInfo = mockAssetPriceInfo(price = 200.0, priceChangePercentage24h = 4.2),
+        period = ChartPeriod.Day,
+        currency = Currency.USD,
+    )
+    assertTrue(model.currentPoint!!.percentage.contains("4.2"))
 }
 ```
 
+Rules: `mockType()` returns a sensible default, expose only fields tests vary, use `copy()` for one-offs, one file per type. If a fixture is used once, inline it.
+
 ## Test Data
 
-- Use helper functions (e.g., `createAssetInfo()`, `createAssetPriceInfo()`) for reusable test data
-- Keep fixtures small, valid, and deterministic
-- If a fixture is only used once, an inline literal is fine
-- For BigDecimal and numeric edge cases, test boundary values explicitly
-
-## Mocks
-
-- Prefer existing test helpers and builders over ad hoc mocks
-- Keep mock setup concise — extract builders when setup is repeated across tests
+- Use shared testkit factories for common types (`mockAsset()`, `mockAssetPriceInfo()`, etc.)
+- Use MockK for complex interfaces that can't be constructed directly
 - Do not mock what you can construct directly
+
+```kotlin
+// gemcore/src/testFixtures/kotlin/com/gemwallet/android/testkit/AssetMock.kt
+fun mockAsset(
+    chain: Chain = Chain.Bitcoin,
+    name: String = "Bitcoin",
+    symbol: String = "BTC",
+    decimals: Int = 8,
+    type: AssetType = AssetType.NATIVE,
+) = Asset(id = AssetId(chain), name = name, symbol = symbol, decimals = decimals, type = type)
+```
 
 ## Formatting
 
 - Use direct assertions for short cases
-- Break long setup into multiline formatting when it improves readability
 - Avoid explanatory comments in tests
 - Clean imports after every modification

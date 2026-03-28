@@ -35,6 +35,9 @@ android {
             freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
         }
     }
+    testFixtures {
+        enable = true
+    }
     testOptions {
         unitTests {
             isReturnDefaultValues = true

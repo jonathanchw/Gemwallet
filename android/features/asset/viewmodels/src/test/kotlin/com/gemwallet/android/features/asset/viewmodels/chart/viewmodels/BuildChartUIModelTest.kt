@@ -1,9 +1,6 @@
 package com.gemwallet.android.features.asset.viewmodels.chart.viewmodels
 
-import com.gemwallet.android.model.AssetPriceInfo
-import com.wallet.core.primitives.AssetId
-import com.wallet.core.primitives.AssetPrice
-import com.wallet.core.primitives.Chain
+import com.gemwallet.android.testkit.mockAssetPriceInfo
 import com.wallet.core.primitives.ChartPeriod
 import com.wallet.core.primitives.ChartValue
 import com.wallet.core.primitives.Currency
@@ -19,7 +16,7 @@ class BuildChartUIModelTest {
     fun `empty prices returns empty chart`() {
         val model = buildChartUIModel(
             prices = emptyList(),
-            priceInfo = createPriceInfo(),
+            priceInfo = mockAssetPriceInfo(),
             period = ChartPeriod.Day,
             currency = Currency.USD,
         )
@@ -33,7 +30,7 @@ class BuildChartUIModelTest {
         val lastChartTimestamp = 1000
         val model = buildChartUIModel(
             prices = listOf(ChartValue(timestamp = lastChartTimestamp, value = 100.0f)),
-            priceInfo = createPriceInfo(updatedAt = lastChartTimestamp * 1000L + 1),
+            priceInfo = mockAssetPriceInfo(updatedAt = lastChartTimestamp * 1000L + 1),
             period = ChartPeriod.Day,
             currency = Currency.USD,
         )
@@ -42,7 +39,7 @@ class BuildChartUIModelTest {
 
         val staleModel = buildChartUIModel(
             prices = listOf(ChartValue(timestamp = lastChartTimestamp, value = 100.0f)),
-            priceInfo = createPriceInfo(updatedAt = lastChartTimestamp * 1000L - 1),
+            priceInfo = mockAssetPriceInfo(updatedAt = lastChartTimestamp * 1000L - 1),
             period = ChartPeriod.Day,
             currency = Currency.USD,
         )
@@ -54,7 +51,7 @@ class BuildChartUIModelTest {
     fun `day period uses 24h change for current point`() {
         val dayModel = buildChartUIModel(
             prices = listOf(ChartValue(timestamp = 1, value = 100.0f)),
-            priceInfo = createPriceInfo(price = 200.0, priceChangePercentage24h = 4.2, updatedAt = 2000L),
+            priceInfo = mockAssetPriceInfo(price = 200.0, priceChangePercentage24h = 4.2, updatedAt = 2000L),
             period = ChartPeriod.Day,
             currency = Currency.USD,
         )
@@ -62,7 +59,7 @@ class BuildChartUIModelTest {
 
         val weekModel = buildChartUIModel(
             prices = listOf(ChartValue(timestamp = 1, value = 100.0f)),
-            priceInfo = createPriceInfo(price = 200.0, priceChangePercentage24h = 4.2, updatedAt = 2000L),
+            priceInfo = mockAssetPriceInfo(price = 200.0, priceChangePercentage24h = 4.2, updatedAt = 2000L),
             period = ChartPeriod.Week,
             currency = Currency.USD,
         )
@@ -74,25 +71,11 @@ class BuildChartUIModelTest {
     fun `zero start price does not crash`() {
         val model = buildChartUIModel(
             prices = listOf(ChartValue(timestamp = 1, value = 0.0f)),
-            priceInfo = createPriceInfo(price = 50.0, updatedAt = 2000L),
+            priceInfo = mockAssetPriceInfo(price = 50.0, updatedAt = 2000L),
             period = ChartPeriod.Week,
             currency = Currency.USD,
         )
         assertNotNull(model.currentPoint)
         assertTrue(model.currentPoint!!.percentage.contains("0"))
     }
-
-    private fun createPriceInfo(
-        price: Double = 123.45,
-        priceChangePercentage24h: Double = 4.2,
-        updatedAt: Long = Long.MAX_VALUE,
-    ) = AssetPriceInfo(
-        currency = Currency.USD,
-        price = AssetPrice(
-            assetId = AssetId(chain = Chain.Bitcoin),
-            price = price,
-            priceChangePercentage24h = priceChangePercentage24h,
-            updatedAt = updatedAt,
-        ),
-    )
 }
