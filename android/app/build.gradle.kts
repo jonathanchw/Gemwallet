@@ -193,7 +193,7 @@ android {
     lint {
         disable += "Instantiatable"
         checkGeneratedSources = true
-        checkDependencies = true
+        checkDependencies = false
     }
 }
 

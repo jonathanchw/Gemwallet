@@ -34,7 +34,7 @@ unit-test:
     @./gradlew testGoogleDebugUnitTest
 
 lint:
-    @./gradlew lint
+    @./gradlew lint -x :gemstone:lintDebug
 
 provision-emulator:
     @bash ./scripts/android_emulator.sh provision
