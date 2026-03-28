@@ -53,7 +53,6 @@ fun AssetListItem(
                     it.valueFormated,
                     it.changePercentageFormatted,
                     it.state,
-                    modifier,
                 )
             }
         },
