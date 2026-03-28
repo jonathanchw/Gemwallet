@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
 }
 
 val gemstoneRoot = rootProject.projectDir.resolve("../core/gemstone")
@@ -38,12 +37,12 @@ android {
 
     sourceSets {
         getByName("main") {
-            java.srcDirs(generatedKotlinDir)
+            kotlin.srcDirs(generatedKotlinDir)
             jniLibs.srcDirs(jniLibsDir)
             manifest.srcFile(gemstoneSrc.resolve("main/AndroidManifest.xml"))
         }
         getByName("androidTest") {
-            java.srcDirs(gemstoneSrc.resolve("androidTest/java"))
+            kotlin.srcDirs(gemstoneSrc.resolve("androidTest/java"))
         }
     }
 }
