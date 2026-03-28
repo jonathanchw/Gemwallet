@@ -19,13 +19,13 @@ install-ndk:
     @cd ../core && just gemstone install-ndk
 
 clean:
-    @./gradlew clean --build-cache
+    @./gradlew clean
 
 build:
-    @./gradlew assembleGoogleDebug --build-cache
+    @./gradlew assembleGoogleDebug
 
 build-test:
-    @./gradlew assembleGoogleDebugAndroidTest --build-cache
+    @./gradlew assembleGoogleDebugAndroidTest
 
 test:
     @./gradlew connectedGoogleDebugAndroidTest
@@ -34,7 +34,7 @@ unit-test:
     @./gradlew testGoogleDebugUnitTest
 
 lint:
-    @./gradlew lint --build-cache
+    @./gradlew lint
 
 provision-emulator:
     @bash ./scripts/android_emulator.sh provision
@@ -52,7 +52,7 @@ mobsfscan:
     uv tool run mobsfscan -- --type android --config .mobsf --exit-warning
 
 release:
-    @./gradlew clean :app:bundleGoogleRelease assembleUniversalRelease assembleHuaweiRelease assembleSolanaRelease assembleSamsungRelease
+    @./gradlew clean :app:bundleGoogleRelease assembleUniversalRelease assembleHuaweiRelease assembleSolanaRelease assembleSamsungRelease --no-configuration-cache
 
 localize:
     @sh ../core/scripts/localize.sh android ui/src/main/res
@@ -111,7 +111,7 @@ build-app-in-docker:
 		-v "${gradle_cache}":/root/.gradle \
 		-v "${maven_cache}":/root/.m2 \
 		gem-android-app-verify \
-		bash -lc 'cd /root/wallet/android && ./gradlew ${BUNDLE_TASK} --no-daemon --build-cache -Dorg.gradle.workers.max={{GRADLE_WORKERS_MAX}}'
+		bash -lc 'cd /root/wallet/android && ./gradlew ${BUNDLE_TASK} --no-daemon --no-configuration-cache -Dorg.gradle.workers.max={{GRADLE_WORKERS_MAX}}'
 	if [ -n "${outputs_dir}" ]; then
 		mkdir -p "${outputs_dir}"
 		docker cp "${container_name}":/root/wallet/android/app/build/outputs/. "${outputs_dir}/"
