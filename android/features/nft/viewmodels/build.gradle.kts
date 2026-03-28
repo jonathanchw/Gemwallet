@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.nft.viewmodels"
+    namespace = "com.gemwallet.android.features.nft.viewmodels"
     compileSdk = 36
 
     defaultConfig {

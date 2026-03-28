@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
-import com.gemwallet.features.referral.views.ReferralNavScreen
+import com.gemwallet.android.features.referral.views.ReferralNavScreen
 import kotlinx.serialization.Serializable
 
 const val referralRouteUriHttp = "https://gemwallet.com/join"

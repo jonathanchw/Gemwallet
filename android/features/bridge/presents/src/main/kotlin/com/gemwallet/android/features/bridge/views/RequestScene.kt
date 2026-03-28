@@ -1,0 +1,212 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
+package com.gemwallet.android.features.bridge.views
+
+import android.widget.Toast
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gemwallet.android.model.AuthRequest
+import com.gemwallet.android.ui.R
+import com.gemwallet.android.ui.components.buttons.MainActionButton
+import com.gemwallet.android.ui.components.dialog.DialogBar
+import com.gemwallet.android.ui.components.list_item.SubheaderItem
+import com.gemwallet.android.ui.components.list_item.listItem
+import com.gemwallet.android.ui.components.list_item.property.PropertyItem
+import com.gemwallet.android.ui.components.list_item.property.PropertyNetworkItem
+import com.gemwallet.android.ui.components.list_item.property.itemsPositioned
+import com.gemwallet.android.ui.components.screen.FatalStateScene
+import com.gemwallet.android.ui.components.screen.LoadingScene
+import com.gemwallet.android.ui.components.screen.ModalBottomSheet
+import com.gemwallet.android.ui.components.screen.Scene
+import com.gemwallet.android.ui.models.ListPosition
+import com.gemwallet.android.ui.models.actions.AssetIdAction
+import com.gemwallet.android.ui.requestAuth
+import com.gemwallet.android.ui.theme.paddingDefault
+import com.gemwallet.android.features.bridge.viewmodels.RequestSceneState
+import com.gemwallet.android.features.bridge.viewmodels.WCRequestViewModel
+import com.gemwallet.android.features.bridge.viewmodels.model.BridgeRequestError
+import com.gemwallet.android.features.bridge.viewmodels.model.WCRequest
+import com.gemwallet.android.features.confirm.presents.ConfirmScreen
+import com.reown.walletkit.client.Wallet
+import uniffi.gemstone.MessagePreview
+
+@Composable
+fun RequestScene(
+    request: Wallet.Model.SessionRequest,
+    verifyContext: Wallet.Model.VerifyContext,
+    onBuy: AssetIdAction,
+    onCancel: () -> Unit,
+) {
+    val viewModel: WCRequestViewModel = hiltViewModel()
+    val context = LocalContext.current
+
+    DisposableEffect(request.topic, request.request.id) {
+        viewModel.onRequest(request, verifyContext) { error ->
+            when (error) {
+                BridgeRequestError.ScamSession -> Toast.makeText(
+                    context,
+                    R.string.errors_connections_malicious_origin,
+                    Toast.LENGTH_LONG
+                ).show()
+                else -> Unit
+            }
+        }
+
+        onDispose { viewModel.reset() }
+    }
+
+    val sceneState by viewModel.sceneState.collectAsStateWithLifecycle()
+
+    when (sceneState) {
+        RequestSceneState.Loading -> LoadingScene(stringResource(id = R.string.wallet_connect_title), viewModel::onReject)
+        is RequestSceneState.Error -> FatalStateScene(
+            title = stringResource(id = R.string.wallet_connect_title),
+            message = (sceneState as RequestSceneState.Error).message.ifBlank {
+                stringResource(id = R.string.errors_unknown_try_again)
+            },
+            onCancel = viewModel::onReject
+        )
+        is RequestSceneState.Request -> (sceneState as RequestSceneState.Request).let { sceneState ->
+            when (sceneState.request) {
+                is WCRequest.SignMessage -> SignMessageScene(
+                    sceneState.walletName,
+                    sceneState.request as WCRequest.SignMessage,
+                    viewModel::onSign,
+                    viewModel::onReject
+                )
+                is WCRequest.Transaction -> ConfirmScreen(
+                    params = (sceneState.request as WCRequest.Transaction).confirmParams,
+                    finishAction = { _, hash, _ -> viewModel.onTransactionResult(hash) },
+                    onBuy = onBuy,
+                    cancelAction = viewModel::onReject
+                )
+            }
+        }
+        RequestSceneState.Cancel -> onCancel()
+    }
+}
+
+@Composable
+private fun SignMessageScene(
+    walletName: String,
+    request: WCRequest.SignMessage,
+    onApprove: () -> Unit,
+    onReject: () -> Unit,
+) {
+    val context = LocalContext.current
+    var isShowFullMessage by remember { mutableStateOf(false) }
+
+    val preview = request.signer.preview()
+
+    Scene(
+        title = stringResource(id = R.string.wallet_connect_title),
+        mainAction = {
+            MainActionButton(title = stringResource(id = R.string.transfer_approve_title)) {
+                context.requestAuth(AuthRequest.Phrase) {
+                    onApprove()
+                }
+            }
+        },
+        onClose = onReject,
+    ) {
+        LazyColumn {
+            item { PropertyItem(R.string.wallet_connect_app, "${request.name} (${request.uri})", listPosition = ListPosition.First) }
+            item { PropertyItem(R.string.common_wallet, walletName, listPosition = ListPosition.Middle) }
+            item { PropertyNetworkItem(request.chain, listPosition = ListPosition.Last) }
+
+            when (preview) {
+                is MessagePreview.Eip712 -> domainMessage(preview) { isShowFullMessage = true }
+                is MessagePreview.Text -> textMessage(preview)
+                is MessagePreview.Siwe -> siweMessage(preview) { isShowFullMessage = true }
+            }
+        }
+
+        if (isShowFullMessage) {
+            ModalBottomSheet(
+                onDismissRequest = { isShowFullMessage = false },
+                dragHandle = { DialogBar(stringResource(R.string.common_done)) { isShowFullMessage = false } },
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(paddingDefault)
+                ) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = request.signer.plainPreview()
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun LazyListScope.textMessage(message: MessagePreview.Text) {
+    item {
+        SubheaderItem(R.string.sign_message_message)
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .listItem()
+                .padding(paddingDefault),
+            text = message.v1,
+        )
+    }
+}
+
+private fun LazyListScope.domainMessage(message: MessagePreview.Eip712, onFullMessage: () -> Unit) {
+    val message = message.v1
+    item {
+        SubheaderItem(R.string.wallet_connect_domain)
+        PropertyItem(R.string.application_name, message.domain.name, listPosition = ListPosition.First)
+        PropertyItem(R.string.asset_contract, message.domain.verifyingContract, listPosition = ListPosition.Last)
+    }
+    message.message.firstOrNull()?.let { section ->
+        item { SubheaderItem(section.name) }
+        itemsPositioned(section.values) { position, item ->
+            PropertyItem(item.name, item.value, listPosition = position)
+        }
+    }
+    item {
+        PropertyItem(
+            R.string.sign_message_view_full_message,
+            listPosition = ListPosition.Single,
+            onClick = onFullMessage,
+        )
+    }
+}
+
+private fun LazyListScope.siweMessage(message: MessagePreview.Siwe, onFullMessage: () -> Unit) {
+    item {
+        SubheaderItem(R.string.wallet_connect_domain)
+        PropertyItem(R.string.application_name, message.v1.domain, listPosition = ListPosition.First)
+        PropertyItem(R.string.asset_contract, message.v1.uri, listPosition = ListPosition.Last)
+    }
+    item {
+        PropertyItem(
+            R.string.sign_message_view_full_message,
+            listPosition = ListPosition.Single,
+            onClick = onFullMessage,
+        )
+    }
+}

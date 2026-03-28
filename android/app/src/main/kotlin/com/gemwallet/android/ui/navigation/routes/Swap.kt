@@ -7,9 +7,9 @@ import androidx.navigation.navOptions
 import com.gemwallet.android.ext.toAssetId
 import com.gemwallet.android.ext.toIdentifier
 import com.gemwallet.android.model.ConfirmParams
-import com.gemwallet.features.swap.viewmodels.models.SwapItemType
-import com.gemwallet.features.swap.views.SwapScreen
-import com.gemwallet.features.swap.views.SwapSelectScreen
+import com.gemwallet.android.features.swap.viewmodels.models.SwapItemType
+import com.gemwallet.android.features.swap.views.SwapScreen
+import com.gemwallet.android.features.swap.views.SwapSelectScreen
 import com.wallet.core.primitives.AssetId
 import kotlinx.serialization.Serializable
 

@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.settings.currency.presents"
+    namespace = "com.gemwallet.android.features.settings.currency.presents"
     compileSdk = 36
 
     defaultConfig {

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.settings"
+    namespace = "com.gemwallet.android.features.settings"
     compileSdk = 36
 
     defaultConfig {

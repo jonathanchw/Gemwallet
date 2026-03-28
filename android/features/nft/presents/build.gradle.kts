@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.nft.presents"
+    namespace = "com.gemwallet.android.features.nft.presents"
     compileSdk = 36
 
     defaultConfig {

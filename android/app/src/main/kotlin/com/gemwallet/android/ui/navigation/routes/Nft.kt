@@ -7,8 +7,8 @@ import androidx.navigation.navOptions
 import com.gemwallet.android.ui.models.actions.CancelAction
 import com.gemwallet.android.ui.models.actions.NftAssetIdAction
 import com.gemwallet.android.ui.models.actions.NftCollectionIdAction
-import com.gemwallet.features.nft.presents.NFTDetailsScene
-import com.gemwallet.features.nft.presents.NftListScene
+import com.gemwallet.android.features.nft.presents.NFTDetailsScene
+import com.gemwallet.android.features.nft.presents.NftListScene
 import com.wallet.core.primitives.AssetId
 import kotlinx.serialization.Serializable
 

@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.settings.price_alerts.presents"
+    namespace = "com.gemwallet.android.features.settings.price_alerts.presents"
     compileSdk = 36
 
     defaultConfig {

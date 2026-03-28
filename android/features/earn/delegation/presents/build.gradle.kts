@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.earn.delegation.presents"
+    namespace = "com.gemwallet.android.features.earn.delegation.presents"
     compileSdk = 36
 
     defaultConfig {

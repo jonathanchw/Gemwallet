@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.referral.presents"
+    namespace = "com.gemwallet.android.features.referral.presents"
     compileSdk = 36
 
     defaultConfig {

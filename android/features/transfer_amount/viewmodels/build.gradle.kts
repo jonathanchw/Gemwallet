@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.transfer_amount.viewmodels"
+    namespace = "com.gemwallet.android.features.transfer_amount.viewmodels"
     compileSdk = 36
 
     defaultConfig {

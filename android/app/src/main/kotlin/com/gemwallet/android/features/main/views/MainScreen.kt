@@ -70,9 +70,9 @@ import com.gemwallet.android.ui.navigation.routes.nftRoute
 import com.gemwallet.android.ui.navigation.routes.settingsRoute
 import com.gemwallet.android.ui.navigation.routes.transactionsRoute
 import com.gemwallet.android.ui.theme.alpha10
-import com.gemwallet.features.assets.views.AssetsScreen
-import com.gemwallet.features.nft.presents.NftListScene
-import com.gemwallet.features.settings.settings.presents.views.SettingsScene
+import com.gemwallet.android.features.assets.views.AssetsScreen
+import com.gemwallet.android.features.nft.presents.NftListScene
+import com.gemwallet.android.features.settings.settings.presents.views.SettingsScene
 import kotlinx.coroutines.launch
 
 @Composable

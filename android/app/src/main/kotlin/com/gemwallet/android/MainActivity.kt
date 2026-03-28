@@ -57,8 +57,8 @@ import com.gemwallet.android.ui.components.isDeviceRooted
 import com.gemwallet.android.ui.theme.Spacer16
 import com.gemwallet.android.ui.theme.WalletTheme
 import com.gemwallet.android.ui.theme.paddingDefault
-import com.gemwallet.features.bridge.views.ProposalScene
-import com.gemwallet.features.bridge.views.RequestScene
+import com.gemwallet.android.features.bridge.views.ProposalScene
+import com.gemwallet.android.features.bridge.views.RequestScene
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.Executor
 import kotlin.system.exitProcess

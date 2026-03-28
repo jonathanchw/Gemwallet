@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.wallets.viewmodels"
+    namespace = "com.gemwallet.android.features.wallets.viewmodels"
     compileSdk = 36
 
     defaultConfig {

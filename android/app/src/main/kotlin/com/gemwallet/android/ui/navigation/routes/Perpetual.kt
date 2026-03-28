@@ -6,8 +6,8 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import com.gemwallet.android.model.AmountParams
-import com.gemwallet.features.perpetual.views.market.PerpetualMarketNavScreen
-import com.gemwallet.features.perpetual.views.position.PerpetualPositionNavScreen
+import com.gemwallet.android.features.perpetual.views.market.PerpetualMarketNavScreen
+import com.gemwallet.android.features.perpetual.views.position.PerpetualPositionNavScreen
 import kotlinx.serialization.Serializable
 
 @Serializable

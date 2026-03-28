@@ -1,0 +1,13 @@
+package com.gemwallet.android.features.stake.models
+
+import com.wallet.core.primitives.TransactionType
+
+sealed class StakeAction(val transactionType: TransactionType, val data: String? = null) {
+    object Stake : StakeAction(TransactionType.StakeDelegate)
+
+    class Rewards(data: String) : StakeAction(TransactionType.StakeRewards, data)
+
+    object Freeze : StakeAction(TransactionType.StakeFreeze)
+
+    object Unfreeze: StakeAction(TransactionType.StakeUnfreeze)
+}

@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.transfer_amount.presents"
+    namespace = "com.gemwallet.android.features.transfer_amount.presents"
     compileSdk = 36
 
     defaultConfig {

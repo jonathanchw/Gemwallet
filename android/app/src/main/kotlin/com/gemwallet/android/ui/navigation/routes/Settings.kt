@@ -9,16 +9,16 @@ import androidx.navigation.navOptions
 import com.gemwallet.android.ext.toIdentifier
 import com.gemwallet.android.ui.components.animation.enterTabScreenTransition
 import com.gemwallet.android.ui.components.animation.exitTabScreenTransition
-import com.gemwallet.features.settings.aboutus.presents.AboutUsScreen
-import com.gemwallet.features.settings.currency.presents.CurrenciesScene
-import com.gemwallet.features.settings.develop.presents.DevelopScene
-import com.gemwallet.features.settings.networks.presents.NetworksScreen
-import com.gemwallet.features.settings.price_alerts.presents.PriceAlertTargetNavScreen
-import com.gemwallet.features.settings.price_alerts.presents.PriceAlertsNavScreen
-import com.gemwallet.features.settings.security.presents.SecurityScene
-import com.gemwallet.features.settings.settings.presents.views.PreferencesScene
-import com.gemwallet.features.settings.settings.presents.views.SettingsScene
-import com.gemwallet.features.settings.settings.presents.views.SupportChatScreen
+import com.gemwallet.android.features.settings.aboutus.presents.AboutUsScreen
+import com.gemwallet.android.features.settings.currency.presents.CurrenciesScene
+import com.gemwallet.android.features.settings.develop.presents.DevelopScene
+import com.gemwallet.android.features.settings.networks.presents.NetworksScreen
+import com.gemwallet.android.features.settings.price_alerts.presents.PriceAlertTargetNavScreen
+import com.gemwallet.android.features.settings.price_alerts.presents.PriceAlertsNavScreen
+import com.gemwallet.android.features.settings.security.presents.SecurityScene
+import com.gemwallet.android.features.settings.settings.presents.views.PreferencesScene
+import com.gemwallet.android.features.settings.settings.presents.views.SettingsScene
+import com.gemwallet.android.features.settings.settings.presents.views.SupportChatScreen
 import com.wallet.core.primitives.AssetId
 import kotlinx.serialization.Serializable
 

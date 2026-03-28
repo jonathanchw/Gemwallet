@@ -6,7 +6,7 @@ plugins {
     id("com.google.devtools.ksp")
 }
 android {
-    namespace = "com.gemwallet.features.referral.viewmodels"
+    namespace = "com.gemwallet.android.features.referral.viewmodels"
     compileSdk = 36
 
     defaultConfig {

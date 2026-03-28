@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.features.bridge.presents"
+    namespace = "com.gemwallet.android.features.bridge.presents"
     compileSdk = 36
 
     defaultConfig {

@@ -23,6 +23,8 @@ import com.wallet.core.primitives.TransactionSwapMetadata
 import com.wallet.core.primitives.TransactionType
 import org.junit.Assert
 import org.junit.Test
+import java.text.DateFormat
+import java.util.Date
 
 class TransactionDetailsAggregateImplTest {
 
@@ -378,8 +380,9 @@ class TransactionDetailsAggregateImplTest {
 
         val date = aggregate.date
         Assert.assertTrue(date.data.contains("January 6, 2026"))
-        Assert.assertTrue(date.data.contains("2:13"))
-        Assert.assertTrue(date.data.contains("AM"))
+        Assert.assertTrue(
+            date.data.contains(DateFormat.getTimeInstance(DateFormat.SHORT).format(Date(transaction.createdAt)))
+        )
     }
 
     @Test
