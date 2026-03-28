@@ -46,6 +46,10 @@ jobs:
         working-directory: android
         run: just bootstrap
 
+      - name: Clean Android build outputs
+        working-directory: android
+        run: just clean
+
       - name: Provision Android SDK
         working-directory: android
         run: just provision-emulator

@@ -18,6 +18,9 @@ install-typeshare:
 install-ndk:
     @cd ../core && just gemstone install-ndk
 
+clean:
+    @./gradlew clean --build-cache
+
 build:
     @./gradlew assembleGoogleDebug --build-cache
 
