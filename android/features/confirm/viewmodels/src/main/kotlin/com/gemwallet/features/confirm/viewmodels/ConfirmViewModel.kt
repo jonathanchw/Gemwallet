@@ -9,10 +9,10 @@ import com.gemwallet.android.blockchain.services.BroadcastService
 import com.gemwallet.android.blockchain.services.SignClientProxy
 import com.gemwallet.android.blockchain.services.SignerPreloaderProxy
 import com.gemwallet.android.cases.transactions.CreateTransaction
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
-import com.gemwallet.android.data.repositoreis.perpetual.PerpetualRepository
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
-import com.gemwallet.android.data.repositoreis.stake.StakeRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.perpetual.PerpetualRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.data.repositories.stake.StakeRepository
 import com.gemwallet.android.domains.asset.chain
 import com.gemwallet.android.domains.asset.isMemoSupport
 import com.gemwallet.android.domains.asset.stakeChain

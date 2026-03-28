@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.cases.wallet.ImportError
 import com.gemwallet.android.cases.wallet.ImportWalletService
-import com.gemwallet.android.data.repositoreis.wallets.WalletsRepository
+import com.gemwallet.android.data.repositories.wallets.WalletsRepository
 import com.gemwallet.android.ext.asset
 import com.gemwallet.android.model.ImportType
 import com.wallet.core.primitives.NameRecord

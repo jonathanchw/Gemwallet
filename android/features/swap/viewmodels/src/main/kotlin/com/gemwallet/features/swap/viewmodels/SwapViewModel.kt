@@ -6,9 +6,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
-import com.gemwallet.android.data.repositoreis.swap.SwapRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.data.repositories.swap.SwapRepository
 import com.gemwallet.android.domains.asset.calculateFiat
 import com.gemwallet.android.domains.asset.formatFiat
 import com.gemwallet.android.ext.getAccount

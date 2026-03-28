@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gemwallet.android.data.coordinates"
+    namespace = "com.gemwallet.android.data.coordinators"
     compileSdk {
         version = release(36)
     }

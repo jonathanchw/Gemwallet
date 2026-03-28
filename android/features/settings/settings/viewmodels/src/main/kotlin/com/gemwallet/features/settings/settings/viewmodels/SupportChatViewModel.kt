@@ -5,7 +5,7 @@ import android.content.res.Configuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.application.device.coordinators.GetDeviceId
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
 import com.gemwallet.android.ext.model
 import com.gemwallet.android.ext.os
 import com.wallet.core.primitives.Currency

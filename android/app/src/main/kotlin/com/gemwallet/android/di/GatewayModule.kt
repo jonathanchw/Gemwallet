@@ -4,8 +4,8 @@ import android.content.Context
 import com.gemwallet.android.cases.nodes.GetCurrentNodeCase
 import com.gemwallet.android.cases.nodes.GetNodesCase
 import com.gemwallet.android.cases.nodes.SetCurrentNodeCase
-import com.gemwallet.android.data.repositoreis.config.SecurityGemPreferences
-import com.gemwallet.android.data.repositoreis.config.SharedGemPreferences
+import com.gemwallet.android.data.repositories.config.SecurityGemPreferences
+import com.gemwallet.android.data.repositories.config.SharedGemPreferences
 import com.gemwallet.android.data.services.gemapi.NativeProvider
 import dagger.Module
 import dagger.Provides

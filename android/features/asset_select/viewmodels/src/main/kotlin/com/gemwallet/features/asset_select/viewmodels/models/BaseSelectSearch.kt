@@ -1,6 +1,6 @@
 package com.gemwallet.features.asset_select.viewmodels.models
 
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.ext.toIdentifier
 import com.gemwallet.android.model.AssetInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -8,7 +8,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.cases.config.GetLatestVersion
-import com.gemwallet.android.data.repositoreis.config.UserConfig
+import com.gemwallet.android.data.repositories.config.UserConfig
 import com.gemwallet.android.model.BuildInfo
 import com.wallet.core.primitives.PlatformStore
 import dagger.hilt.android.lifecycle.HiltViewModel

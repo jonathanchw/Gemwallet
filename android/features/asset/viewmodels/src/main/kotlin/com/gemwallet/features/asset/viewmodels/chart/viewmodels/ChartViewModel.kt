@@ -4,7 +4,7 @@ import android.text.format.DateUtils
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.data.services.gemapi.GemApiClient
 import com.gemwallet.android.ext.tickerFlow
 import com.gemwallet.android.ext.toAssetId

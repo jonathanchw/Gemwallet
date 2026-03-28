@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.blockchain.operators.ValidateAddressOperator
 import com.gemwallet.android.cases.nft.GetAssetNft
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
-import com.gemwallet.android.data.repositoreis.wallets.WalletsRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.data.repositories.wallets.WalletsRepository
 import com.gemwallet.android.domains.asset.chain
 import com.gemwallet.android.ext.asset
 import com.gemwallet.android.ext.getAccount

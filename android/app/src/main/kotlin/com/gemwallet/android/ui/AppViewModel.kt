@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.BuildConfig
 import com.gemwallet.android.cases.device.GetPushEnabled
 import com.gemwallet.android.cases.device.SwitchPushEnabled
-import com.gemwallet.android.data.repositoreis.config.UserConfig
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
-import com.gemwallet.android.data.repositoreis.wallets.WalletsRepository
+import com.gemwallet.android.data.repositories.config.UserConfig
+import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.data.repositories.wallets.WalletsRepository
 import com.gemwallet.android.data.services.gemapi.GemApiClient
 import com.gemwallet.android.features.onboarding.OnboardingDest
 import com.gemwallet.android.model.Session

@@ -11,7 +11,7 @@ import com.gemwallet.android.cases.nodes.GetCurrentNodeCase
 import com.gemwallet.android.cases.nodes.GetNodesCase
 import com.gemwallet.android.cases.nodes.SetBlockExplorerCase
 import com.gemwallet.android.cases.nodes.SetCurrentNodeCase
-import com.gemwallet.android.data.repositoreis.chains.ChainInfoRepository
+import com.gemwallet.android.data.repositories.chains.ChainInfoRepository
 import com.gemwallet.android.ext.filter
 import com.gemwallet.android.model.NodeStatus
 import com.gemwallet.features.settings.networks.viewmodels.models.AddSourceType

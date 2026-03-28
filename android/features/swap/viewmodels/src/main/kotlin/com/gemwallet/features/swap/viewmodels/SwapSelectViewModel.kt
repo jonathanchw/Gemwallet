@@ -5,8 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.cases.swap.GetSwapSupported
 import com.gemwallet.android.cases.tokens.SearchTokensCase
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
 import com.gemwallet.android.ext.isSwapSupport
 import com.gemwallet.android.ext.toAssetId
 import com.gemwallet.android.ext.toChain

@@ -10,8 +10,8 @@ import com.gemwallet.android.application.pricealerts.coordinators.SyncPriceAlert
 import com.gemwallet.android.application.transactions.coordinators.GetTransactions
 import com.gemwallet.android.cases.banners.HasMultiSign
 import com.gemwallet.android.cases.nodes.GetCurrentBlockExplorer
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
 import com.gemwallet.android.domains.asset.chain
 import com.gemwallet.android.domains.asset.getIconUrl
 import com.gemwallet.android.domains.pricealerts.values.PriceAlertsStateEvent

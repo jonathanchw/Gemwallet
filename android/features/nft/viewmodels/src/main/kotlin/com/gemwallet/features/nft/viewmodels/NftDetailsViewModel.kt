@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.cases.nft.GetAssetNft
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
 import com.gemwallet.android.ext.getAccount
 import com.wallet.core.primitives.Account
 import com.wallet.core.primitives.NFTAsset

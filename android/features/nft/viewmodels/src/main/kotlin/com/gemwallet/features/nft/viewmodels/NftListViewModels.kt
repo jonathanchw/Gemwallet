@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.cases.nft.GetListNftCase
 import com.gemwallet.android.cases.nft.LoadNFTCase
 import com.gemwallet.android.cases.nft.NftError
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
 import com.gemwallet.android.ui.models.NftItemUIModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

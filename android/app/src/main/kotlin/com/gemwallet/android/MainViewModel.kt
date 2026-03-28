@@ -6,10 +6,10 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.cases.parseNotificationData
-import com.gemwallet.android.data.repositoreis.bridge.BridgesRepository
-import com.gemwallet.android.data.repositoreis.config.UserConfig
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
-import com.gemwallet.android.data.repositoreis.wallets.WalletsRepository
+import com.gemwallet.android.data.repositories.bridge.BridgesRepository
+import com.gemwallet.android.data.repositories.config.UserConfig
+import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.data.repositories.wallets.WalletsRepository
 import com.gemwallet.android.model.AuthRequest
 import com.gemwallet.android.model.AuthState
 import com.gemwallet.android.model.PushNotificationData

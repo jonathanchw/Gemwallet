@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.application.pricealerts.coordinators.GetPriceAlerts
 import com.gemwallet.android.cases.nodes.GetCurrentBlockExplorer
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.domains.asset.chain
 import com.gemwallet.android.ext.toAssetId
 import com.gemwallet.android.ui.R

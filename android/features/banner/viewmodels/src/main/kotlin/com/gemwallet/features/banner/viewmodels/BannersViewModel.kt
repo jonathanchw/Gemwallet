@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.cases.banners.CancelBannerCase
 import com.gemwallet.android.cases.banners.GetBannersCase
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
 import com.gemwallet.android.ext.getReserveBalance
 import com.gemwallet.android.model.Crypto
 import com.gemwallet.android.model.format

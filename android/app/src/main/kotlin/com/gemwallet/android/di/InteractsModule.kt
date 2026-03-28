@@ -26,10 +26,10 @@ import com.gemwallet.android.cases.device.SyncSubscription
 import com.gemwallet.android.cases.wallet.ImportWalletService
 import com.gemwallet.android.data.password.PreferencePasswordStore
 import com.gemwallet.android.data.password.TinkSecurityStore
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
-import com.gemwallet.android.data.repositoreis.wallets.PhraseAddressImportWalletService
-import com.gemwallet.android.data.repositoreis.wallets.WalletsRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.data.repositories.wallets.PhraseAddressImportWalletService
+import com.gemwallet.android.data.repositories.wallets.WalletsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

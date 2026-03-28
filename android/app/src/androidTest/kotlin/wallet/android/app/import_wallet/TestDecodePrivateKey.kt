@@ -1,6 +1,6 @@
 package wallet.android.app.import_wallet
 
-import com.gemwallet.android.data.repositoreis.wallets.PhraseAddressImportWalletService
+import com.gemwallet.android.data.repositories.wallets.PhraseAddressImportWalletService
 import com.wallet.core.primitives.Chain
 import org.junit.Assert.assertEquals
 import org.junit.Test

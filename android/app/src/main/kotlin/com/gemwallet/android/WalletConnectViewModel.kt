@@ -2,8 +2,8 @@ package com.gemwallet.android
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gemwallet.android.data.repositoreis.bridge.BridgesRepository
-import com.gemwallet.android.data.repositoreis.bridge.WalletConnectEvent
+import com.gemwallet.android.data.repositories.bridge.BridgesRepository
+import com.gemwallet.android.data.repositories.bridge.WalletConnectEvent
 import com.reown.walletkit.client.Wallet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

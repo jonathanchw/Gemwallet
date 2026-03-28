@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.application.pricealerts.coordinators.IncludePriceAlert
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.ext.toAssetId
 import com.gemwallet.android.model.format
 import com.gemwallet.features.settings.price_alerts.viewmodels.models.PriceAlertTargetError

@@ -3,7 +3,7 @@ package com.gemwallet.features.transfer_amount.viewmodels
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gemwallet.android.data.repositoreis.stake.StakeRepository
+import com.gemwallet.android.data.repositories.stake.StakeRepository
 import com.gemwallet.features.transfer_amount.models.ValidatorsUIState
 import com.wallet.core.primitives.AssetId
 import com.wallet.core.primitives.Chain

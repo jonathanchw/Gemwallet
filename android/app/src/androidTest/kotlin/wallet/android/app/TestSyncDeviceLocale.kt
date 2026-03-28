@@ -1,6 +1,6 @@
 package wallet.android.app
 
-import com.gemwallet.android.data.repositoreis.device.DeviceRepository
+import com.gemwallet.android.data.repositories.device.DeviceRepository
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.Locale

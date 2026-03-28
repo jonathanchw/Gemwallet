@@ -7,7 +7,7 @@ import com.gemwallet.android.application.pricealerts.coordinators.ExcludePriceAl
 import com.gemwallet.android.application.pricealerts.coordinators.GetPriceAlerts
 import com.gemwallet.android.application.pricealerts.coordinators.IncludePriceAlert
 import com.gemwallet.android.application.pricealerts.coordinators.PriceAlertsStateCoordinator
-import com.gemwallet.android.data.repositoreis.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.domains.pricealerts.values.PriceAlertsStateEvent
 import com.gemwallet.android.ext.toAssetId
 import com.wallet.core.primitives.Asset

@@ -7,8 +7,8 @@ import com.gemwallet.android.application.referral.coordinators.CreateReferral
 import com.gemwallet.android.application.referral.coordinators.GetRewards
 import com.gemwallet.android.application.referral.coordinators.Redeem
 import com.gemwallet.android.application.referral.coordinators.UseReferralCode
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
-import com.gemwallet.android.data.repositoreis.wallets.WalletsRepository
+import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.data.repositories.wallets.WalletsRepository
 import com.wallet.core.primitives.RewardRedemptionOption
 import com.wallet.core.primitives.Rewards
 import com.wallet.core.primitives.Wallet

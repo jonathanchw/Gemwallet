@@ -11,7 +11,7 @@ import coil3.disk.directory
 import coil3.memory.MemoryCache
 import coil3.svg.SvgDecoder
 import com.gemwallet.android.application.perpetual.coordinators.SyncPerpetualPositions
-import com.gemwallet.android.data.repositoreis.assets.PriceWebSocketClient
+import com.gemwallet.android.data.repositories.assets.PriceWebSocketClient
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 

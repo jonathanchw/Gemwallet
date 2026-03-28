@@ -1,0 +1,95 @@
+package com.gemwallet.android.data.repositories.di
+
+import com.gemwallet.android.application.transactions.coordinators.GetChangedTransactions
+import com.gemwallet.android.blockchain.services.AddressStatusService
+import com.gemwallet.android.blockchain.services.BalancesService
+import com.gemwallet.android.blockchain.services.PerpetualService
+import com.gemwallet.android.cases.tokens.SearchTokensCase
+import com.gemwallet.android.data.repositories.assets.AssetsRepository
+import com.gemwallet.android.data.repositories.assets.PriceWebSocketClient
+import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.data.service.store.database.AssetsDao
+import com.gemwallet.android.data.service.store.database.AssetsPriorityDao
+import com.gemwallet.android.data.service.store.database.BalancesDao
+import com.gemwallet.android.data.service.store.database.PriceAlertsDao
+import com.gemwallet.android.data.service.store.database.PricesDao
+import com.gemwallet.android.data.services.gemapi.GemApiClient
+import com.gemwallet.android.model.BuildInfo
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import uniffi.gemstone.GemGateway
+import javax.inject.Singleton
+
+@InstallIn(SingletonComponent::class)
+@Module
+object AssetsModule {
+    @Provides
+    @Singleton
+    fun provideAssetsRepository(
+        gemApiClient: GemApiClient,
+        assetsDao: AssetsDao,
+        assetsPriorityDao: AssetsPriorityDao,
+        balancesDao: BalancesDao,
+        pricesDao: PricesDao,
+        sessionRepository: SessionRepository,
+        balancesService: BalancesService,
+        getChangedTransactions: GetChangedTransactions,
+        searchTokensCase: SearchTokensCase,
+        priceClient: PriceWebSocketClient,
+    ): AssetsRepository = AssetsRepository(
+        gemApi = gemApiClient,
+        assetsDao = assetsDao,
+        assetsPriorityDao = assetsPriorityDao,
+        balancesDao = balancesDao,
+        pricesDao = pricesDao,
+        sessionRepository = sessionRepository,
+        getChangedTransactions = getChangedTransactions,
+        balancesService = balancesService,
+        searchTokensCase = searchTokensCase,
+        priceClient = priceClient
+    )
+
+    @Provides
+    @Singleton
+    fun provideBalanceRemoteSource(
+        gateway: GemGateway,
+    ): BalancesService = BalancesService(
+        gateway = gateway,
+    )
+
+    @Provides
+    @Singleton
+    fun provideAddressStatusService(
+        gateway: GemGateway,
+    ): AddressStatusService = AddressStatusService(
+        gateway = gateway,
+    )
+
+    @Provides
+    @Singleton
+    fun providePriceClient(
+        sessionRepository: SessionRepository,
+        buildInfo: BuildInfo,
+        assetsDao: AssetsDao,
+        pricesDao: PricesDao,
+        priceAlertsDao: PriceAlertsDao,
+    ): PriceWebSocketClient {
+        return PriceWebSocketClient(
+            sessionRepository = sessionRepository,
+            buildInfo = buildInfo,
+            assetsDao = assetsDao,
+            pricesDao = pricesDao,
+            priceAlertsDao = priceAlertsDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providePerpetualRemoteSource(
+        gateway: GemGateway,
+    ): PerpetualService = PerpetualService(
+        gateway = gateway,
+    )
+}

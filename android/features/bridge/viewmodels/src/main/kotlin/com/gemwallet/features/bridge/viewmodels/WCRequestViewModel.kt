@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.application.PasswordStore
 import com.gemwallet.android.blockchain.operators.LoadPrivateKeyOperator
-import com.gemwallet.android.data.repositoreis.bridge.BridgesRepository
-import com.gemwallet.android.data.repositoreis.bridge.getNamespace
-import com.gemwallet.android.data.repositoreis.wallets.WalletsRepository
+import com.gemwallet.android.data.repositories.bridge.BridgesRepository
+import com.gemwallet.android.data.repositories.bridge.getNamespace
+import com.gemwallet.android.data.repositories.wallets.WalletsRepository
 import com.gemwallet.android.ext.getAccount
 import com.gemwallet.features.bridge.viewmodels.model.BridgeRequestError
 import com.gemwallet.features.bridge.viewmodels.model.WCRequest

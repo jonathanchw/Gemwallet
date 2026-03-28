@@ -3,11 +3,11 @@ package com.gemwallet.features.bridge.viewmodels
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gemwallet.android.data.repositoreis.bridge.BridgesRepository
-import com.gemwallet.android.data.repositoreis.bridge.getChainNameSpace
-import com.gemwallet.android.data.repositoreis.bridge.getReference
-import com.gemwallet.android.data.repositoreis.session.SessionRepository
-import com.gemwallet.android.data.repositoreis.wallets.WalletsRepository
+import com.gemwallet.android.data.repositories.bridge.BridgesRepository
+import com.gemwallet.android.data.repositories.bridge.getChainNameSpace
+import com.gemwallet.android.data.repositories.bridge.getReference
+import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.data.repositories.wallets.WalletsRepository
 import com.gemwallet.features.bridge.viewmodels.model.SessionUI
 import com.gemwallet.features.bridge.viewmodels.model.map
 import com.reown.walletkit.client.Wallet

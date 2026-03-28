@@ -2,7 +2,7 @@ package com.gemwallet.features.bridge.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gemwallet.android.data.repositoreis.bridge.BridgesRepository
+import com.gemwallet.android.data.repositories.bridge.BridgesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
