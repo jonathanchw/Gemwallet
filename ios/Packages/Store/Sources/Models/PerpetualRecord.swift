@@ -6,7 +6,7 @@ import Primitives
 
 struct PerpetualRecord: Codable, TableRecord, FetchableRecord, PersistableRecord {
     static let databaseTableName: String = "perpetuals"
-    
+
     struct Columns {
         static let id = Column("id")
         static let name = Column("name")
@@ -19,6 +19,7 @@ struct PerpetualRecord: Codable, TableRecord, FetchableRecord, PersistableRecord
         static let volume24h = Column("volume24h")
         static let funding = Column("funding")
         static let maxLeverage = Column("maxLeverage")
+        static let isIsolatedOnly = Column("isIsolatedOnly")
         static let isPinned = Column("isPinned")
     }
     
@@ -33,6 +34,7 @@ struct PerpetualRecord: Codable, TableRecord, FetchableRecord, PersistableRecord
     var volume24h: Double
     var funding: Double
     var maxLeverage: UInt8
+    var isIsolatedOnly: Bool
     var isPinned: Bool
     
     init(
@@ -47,6 +49,7 @@ struct PerpetualRecord: Codable, TableRecord, FetchableRecord, PersistableRecord
         volume24h: Double,
         funding: Double,
         maxLeverage: UInt8,
+        isIsolatedOnly: Bool = false,
         isPinned: Bool = false
     ) {
         self.id = id
@@ -60,6 +63,7 @@ struct PerpetualRecord: Codable, TableRecord, FetchableRecord, PersistableRecord
         self.volume24h = volume24h
         self.funding = funding
         self.maxLeverage = maxLeverage
+        self.isIsolatedOnly = isIsolatedOnly
         self.isPinned = isPinned
     }
     
@@ -83,6 +87,7 @@ extension PerpetualRecord: CreateTable {
             $0.column(Columns.volume24h.name, .double).notNull()
             $0.column(Columns.funding.name, .double).notNull()
             $0.column(Columns.maxLeverage.name, .integer).notNull()
+            $0.column(Columns.isIsolatedOnly.name, .boolean).notNull().defaults(to: false)
             $0.column(Columns.isPinned.name, .boolean).notNull().defaults(to: false)
         }
     }
@@ -101,7 +106,8 @@ extension PerpetualRecord {
             openInterest: openInterest,
             volume24h: volume24h,
             funding: funding,
-            maxLeverage: maxLeverage
+            maxLeverage: maxLeverage,
+            isIsolatedOnly: isIsolatedOnly
         )
     }
 }
@@ -119,7 +125,8 @@ extension Perpetual {
             openInterest: openInterest,
             volume24h: volume24h,
             funding: funding,
-            maxLeverage: maxLeverage
+            maxLeverage: maxLeverage,
+            isIsolatedOnly: isIsolatedOnly
         )
     }
 }

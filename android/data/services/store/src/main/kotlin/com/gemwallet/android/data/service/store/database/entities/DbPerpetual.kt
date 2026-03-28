@@ -67,6 +67,7 @@ fun DbPerpetual.toDTO(): Perpetual? {
         volume24h = volume24h,
         funding = funding,
         maxLeverage = maxLeverage.toUByte(),
+        isIsolatedOnly = false,
     )
 }
 

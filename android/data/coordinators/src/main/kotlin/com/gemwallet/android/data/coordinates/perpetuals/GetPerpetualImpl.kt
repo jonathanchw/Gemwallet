@@ -24,7 +24,7 @@ class GetPerpetualImpl @Inject constructor(
 }
 
 class PerpetualDetailsDataAggregateImpl(
-    val data: PerpetualData
+    private val data: PerpetualData
 ) : PerpetualDetailsDataAggregate {
     override val id: String = data.perpetual.id
 
@@ -45,4 +45,6 @@ class PerpetualDetailsDataAggregateImpl(
     override val price: Double = data.perpetual.price
 
     override val identifier: String = data.perpetual.identifier
+
+    override val isIsolatedOnly: Boolean = data.perpetual.isIsolatedOnly
 }

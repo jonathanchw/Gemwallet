@@ -456,6 +456,14 @@ struct Migrations {
             try? FiatTransactionRecord.create(db: db)
         }
 
+        migrator.registerMigration("Add isIsolatedOnly to \(PerpetualRecord.databaseTableName)") { db in
+            try? db.alter(table: PerpetualRecord.databaseTableName) {
+                $0.add(column: PerpetualRecord.Columns.isIsolatedOnly.name, .boolean)
+                    .notNull()
+                    .defaults(to: false)
+            }
+        }
+
         try migrator.migrate(dbQueue)
     }
 }
