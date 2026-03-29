@@ -1,14 +1,13 @@
 package com.gemwallet.android.blockchain.services
 
 import com.gemwallet.android.blockchain.clients.SignClient
+import com.gemwallet.android.blockchain.gemstone.toGemSignerInput
 import com.gemwallet.android.domains.asset.chain
 import com.gemwallet.android.model.ChainSignData
 import com.gemwallet.android.model.ConfirmParams
 import com.gemwallet.android.model.Fee
 import com.wallet.core.primitives.Chain
 import uniffi.gemstone.GemChainSigner
-import uniffi.gemstone.GemGasPriceType
-import uniffi.gemstone.GemTransactionLoadInput
 import java.math.BigInteger
 
 class SignService : SignClient {
@@ -36,7 +35,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -54,7 +53,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -70,7 +69,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -86,13 +85,13 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
             fee = fee,
         )
-        return listOf(getSigner(params).signTransfer(data, privateKey).toByteArray())
+        return listOf(getSigner(params).signData(data, privateKey).toByteArray())
     }
 
     override suspend fun signNativeTransfer(
@@ -102,7 +101,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -120,7 +119,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -138,7 +137,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -154,7 +153,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -170,7 +169,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -186,7 +185,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -202,7 +201,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -218,7 +217,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -234,7 +233,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -250,7 +249,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -266,7 +265,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -282,7 +281,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -298,7 +297,7 @@ class SignService : SignClient {
         fee: Fee,
         privateKey: ByteArray
     ): List<ByteArray> {
-        val data = getLoadInput(
+        val data = buildSignerInput(
             params = params,
             chainData = chainData,
             finalAmount = finalAmount,
@@ -363,36 +362,15 @@ class SignService : SignClient {
         } 
     }
 
-    private fun getLoadInput(
+    private fun buildSignerInput(
         params: ConfirmParams,
         chainData: ChainSignData,
         finalAmount: BigInteger,
         fee: Fee,
-    ) = GemTransactionLoadInput(
-        inputType = params.toDto(),
-        senderAddress = params.from.address,
-        destinationAddress = params.destination()?.address ?: "",
-        value = finalAmount.toString(),
-        gasPrice = when (fee) {
-            is Fee.Eip1559 -> GemGasPriceType.Eip1559(
-                gasPrice = fee.maxGasPrice.toString(),
-                priorityFee = fee.minerFee.toString(),
-            )
-            is Fee.Plain -> GemGasPriceType.Regular(
-                gasPrice = fee.amount.toString(),
-            )
-            is Fee.Regular -> GemGasPriceType.Regular(
-                gasPrice = fee.amount.toString(),
-            )
-            is Fee.Solana -> GemGasPriceType.Solana(
-                gasPrice = fee.amount.toString(),
-                priorityFee = fee.minerFee.toString(),
-                unitPrice = fee.unitFee.toString(),
-            )
-        },
-        memo = params.memo(),
-        isMaxValue = params.useMaxAmount,
-        metadata = chainData.toDto(),
+    ) = params.toGemSignerInput(
+        chainData = chainData,
+        finalAmount = finalAmount,
+        fee = fee,
     )
 
     private fun getSigner(params: ConfirmParams) = GemChainSigner(params.asset.chain.string)

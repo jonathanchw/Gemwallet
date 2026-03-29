@@ -2,6 +2,8 @@ package com.gemwallet.android.blockchain.clients.tron
 
 import android.text.format.DateUtils
 import com.gemwallet.android.blockchain.clients.SignClient
+import com.gemwallet.android.blockchain.gemstone.toGemGasPriceType
+import com.gemwallet.android.blockchain.gemstone.toGemSignerInput
 import com.gemwallet.android.domains.asset.subtype
 import com.gemwallet.android.domains.asset.toGem
 import com.gemwallet.android.math.decodeHex
@@ -13,7 +15,6 @@ import com.google.protobuf.ByteString
 import com.wallet.core.primitives.AssetSubtype
 import com.wallet.core.primitives.Chain
 import uniffi.gemstone.GemChainSigner
-import uniffi.gemstone.GemGasPriceType
 import uniffi.gemstone.GemTransactionInputType
 import uniffi.gemstone.GemTransactionLoadInput
 import uniffi.gemstone.GemTransferDataExtra
@@ -285,12 +286,12 @@ class TronSignClient(
             senderAddress = params.from.address,
             destinationAddress = params.destination.address,
             value = finalAmount.toString(),
-            gasPrice = GemGasPriceType.Regular((fee as? Fee.Regular)?.maxGasPrice.toString()),
+            gasPrice = fee.toGemGasPriceType(),
             memo = null,
             isMaxValue = params.useMaxAmount,
             metadata = metadata,
         )
-        return listOf(GemChainSigner(chain.string).signData(gemLoadInput, privateKey).toByteArray())
+        return listOf(GemChainSigner(chain.string).signData(gemLoadInput.toGemSignerInput(fee), privateKey).toByteArray())
     }
 
     private fun createVoteContract(votes: List<uniffi.gemstone.TronVote>, owner: String) = Tron.VoteWitnessContract.newBuilder().apply {

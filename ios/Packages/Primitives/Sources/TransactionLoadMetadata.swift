@@ -1,7 +1,5 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
-import Foundation
-
 public struct HyperliquidOrder: Sendable {
     public let approveAgentRequired: Bool
     public let approveReferralRequired: Bool
@@ -60,7 +58,7 @@ public enum TransactionLoadMetadata: Sendable {
         blockHash: String,
         chainId: String
     )
-    case aptos(sequence: UInt64, gasLimit: UInt64? = nil, data: String? = nil)
+    case aptos(sequence: UInt64, data: String? = nil)
     case polkadot(
         sequence: UInt64,
         genesisHash: String,
@@ -83,110 +81,110 @@ public enum TransactionLoadMetadata: Sendable {
     case hyperliquid(order: HyperliquidOrder?)
 }
 
-extension TransactionLoadMetadata {
-    public func getSequence() throws -> UInt64 {
+public extension TransactionLoadMetadata {
+    func getSequence() throws -> UInt64 {
         switch self {
-        case .ton(_, _, let sequence),
-             .cosmos(_, let sequence, _),
-             .near(let sequence, _),
-             .stellar(let sequence, _),
-             .xrp(let sequence, _),
-             .algorand(let sequence, _, _),
-             .aptos(let sequence, _, _),
-             .polkadot(let sequence, _, _, _, _, _, _),
-             .evm(let sequence, _, _):
+        case let .ton(_, _, sequence),
+             let .cosmos(_, sequence, _),
+             let .near(sequence, _),
+             let .stellar(sequence, _),
+             let .xrp(sequence, _),
+             let .algorand(sequence, _, _),
+             let .aptos(sequence, _),
+             let .polkadot(sequence, _, _, _, _, _, _),
+             let .evm(sequence, _, _):
             return sequence
         case .none, .bitcoin, .zcash, .cardano, .tron, .solana, .sui, .hyperliquid:
             throw AnyError("Sequence not available for this metadata type")
         }
     }
 
-    public func getBlockNumber() throws -> UInt64 {
+    func getBlockNumber() throws -> UInt64 {
         switch self {
-        case .polkadot(_, _, _, let blockNumber, _, _, _),
-             .tron(let blockNumber, _, _, _, _, _, _),
-             .xrp(_, let blockNumber):
+        case let .polkadot(_, _, _, blockNumber, _, _, _),
+             let .tron(blockNumber, _, _, _, _, _, _),
+             let .xrp(_, blockNumber):
             return blockNumber
         default:
             throw AnyError("Block number not available for this metadata type")
         }
     }
 
-    public func getBlockHash() throws -> String {
+    func getBlockHash() throws -> String {
         switch self {
-        case .solana(_, _, _, let blockHash),
-            .near(_, let blockHash),
-             .algorand(_, let blockHash, _),
-             .polkadot(_, _, let blockHash, _, _, _, _):
+        case let .solana(_, _, _, blockHash),
+             let .near(_, blockHash),
+             let .algorand(_, blockHash, _),
+             let .polkadot(_, _, blockHash, _, _, _, _):
             return blockHash
         default:
             throw AnyError("Block hash not available for this metadata type")
         }
     }
 
-    public func getChainId() throws -> String {
+    func getChainId() throws -> String {
         switch self {
-        case .cosmos(_, _, let chainId):
+        case let .cosmos(_, _, chainId):
             return chainId
-        case .algorand(_, _, let chainId):
+        case let .algorand(_, _, chainId):
             return chainId
-        case .evm(_, let chainId, _):
+        case let .evm(_, chainId, _):
             return String(chainId)
         default:
             throw AnyError("Chain ID not available for this metadata type")
         }
     }
 
-    public func getUtxos() throws -> [UTXO] {
+    func getUtxos() throws -> [UTXO] {
         switch self {
-        case .bitcoin(let utxos),
-             .zcash(let utxos, _),
-             .cardano(let utxos):
+        case let .bitcoin(utxos),
+             let .zcash(utxos, _),
+             let .cardano(utxos):
             return utxos
         default:
             throw AnyError("UTXOs not available for this metadata type")
         }
     }
 
-    public func getIsDestinationAddressExist() throws -> Bool {
+    func getIsDestinationAddressExist() throws -> Bool {
         switch self {
-            case .stellar(_, let isDestinationAddressExist):
+        case let .stellar(_, isDestinationAddressExist):
             return isDestinationAddressExist
         default:
             throw AnyError("Destination existence flag not available for this metadata type")
         }
     }
 
-    public func getAccountNumber() throws -> UInt64 {
+    func getAccountNumber() throws -> UInt64 {
         switch self {
-        case .cosmos(let accountNumber, _, _):
+        case let .cosmos(accountNumber, _, _):
             return accountNumber
         default:
             throw AnyError("Account number not available for this metadata type")
         }
     }
 
-    public func getMessageBytes() throws -> String {
+    func getMessageBytes() throws -> String {
         switch self {
-        case .sui(let messageBytes):
+        case let .sui(messageBytes):
             return messageBytes
         default:
             throw AnyError("Message bytes not available for this metadata type")
         }
     }
 
-    public func senderTokenAddress() throws -> String? {
+    func senderTokenAddress() throws -> String? {
         switch self {
-        case .ton(let senderTokenAddress, _, _):
+        case let .ton(senderTokenAddress, _, _):
             return senderTokenAddress
         default:
             throw AnyError("Sender token address not available for this metadata type")
         }
     }
 
-    public func getData() throws -> String {
+    func getData() throws -> String {
         let data: String? = switch self {
-        case .aptos(_, _, let data): data
+        case let .aptos(_, data): data
         default: .none
         }
         guard let data = data else {
@@ -194,5 +192,4 @@ extension TransactionLoadMetadata {
         }
         return data
     }
-
 }

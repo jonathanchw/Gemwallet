@@ -1,48 +1,47 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
-import Foundation
 import Gemstone
 import Primitives
 
-extension GemTransactionLoadMetadata {
-    public func map() throws -> TransactionLoadMetadata {
+public extension GemTransactionLoadMetadata {
+    func map() throws -> TransactionLoadMetadata {
         switch self {
         case .none:
             return .none
-        case .solana(let senderTokenAddress, let recipientTokenAddress, let tokenProgram, let blockHash):
+        case let .solana(senderTokenAddress, recipientTokenAddress, tokenProgram, blockHash):
             return .solana(
                 senderTokenAddress: senderTokenAddress,
                 recipientTokenAddress: recipientTokenAddress,
                 tokenProgram: tokenProgram?.map(),
                 blockHash: blockHash
             )
-        case .ton(let senderTokenAddress, let recipientTokenAddress, let sequence):
+        case let .ton(senderTokenAddress, recipientTokenAddress, sequence):
             return .ton(
                 senderTokenAddress: senderTokenAddress,
                 recipientTokenAddress: recipientTokenAddress,
                 sequence: sequence
             )
-        case .cosmos(let accountNumber, let sequence, let chainId):
+        case let .cosmos(accountNumber, sequence, chainId):
             return .cosmos(accountNumber: UInt64(accountNumber), sequence: sequence, chainId: chainId)
-        case .bitcoin(let utxos):
-            return .bitcoin(utxos: try utxos.map { try $0.map() })
-        case .zcash(let utxos, let branchId):
-            return .zcash(utxos: try utxos.map { try $0.map() }, branchId: branchId)
-        case .cardano(let utxos):
-            return .cardano(utxos: try utxos.map { try $0.map() })
-        case .evm(let nonce, let chainId, let contractCall):
+        case let .bitcoin(utxos):
+            return try .bitcoin(utxos: utxos.map { try $0.map() })
+        case let .zcash(utxos, branchId):
+            return try .zcash(utxos: utxos.map { try $0.map() }, branchId: branchId)
+        case let .cardano(utxos):
+            return try .cardano(utxos: utxos.map { try $0.map() })
+        case let .evm(nonce, chainId, contractCall):
             return .evm(nonce: UInt64(nonce), chainId: UInt64(chainId), contractCall: contractCall?.map())
-        case .near(let sequence, let blockHash):
+        case let .near(sequence, blockHash):
             return .near(sequence: sequence, blockHash: blockHash)
-        case .stellar(let sequence, let isDestinationAddressExist):
+        case let .stellar(sequence, isDestinationAddressExist):
             return .stellar(sequence: sequence, isDestinationAddressExist: isDestinationAddressExist)
-        case .xrp(let sequence, let blockNumber):
+        case let .xrp(sequence, blockNumber):
             return .xrp(sequence: sequence, blockNumber: blockNumber)
-        case .algorand(let sequence, let blockHash, let chainId):
+        case let .algorand(sequence, blockHash, chainId):
             return .algorand(sequence: sequence, blockHash: blockHash, chainId: chainId)
-        case .aptos(let sequence, let gasLimit, let data):
-            return .aptos(sequence: sequence, gasLimit: gasLimit, data: data)
-        case .polkadot(let sequence, let genesisHash, let blockHash, let blockNumber, let specVersion, let transactionVersion, let period):
+        case let .aptos(sequence, data):
+            return .aptos(sequence: sequence, data: data)
+        case let .polkadot(sequence, genesisHash, blockHash, blockNumber, specVersion, transactionVersion, period):
             return .polkadot(
                 sequence: sequence,
                 genesisHash: genesisHash,
@@ -52,14 +51,14 @@ extension GemTransactionLoadMetadata {
                 transactionVersion: transactionVersion,
                 period: UInt64(period)
             )
-        case .tron(
-            let blockNumber,
-            let blockVersion,
-            let blockTimestamp,
-            let transactionTreeRoot,
-            let parentHash,
-            let witnessAddress,
-            let stakeData
+        case let .tron(
+            blockNumber,
+            blockVersion,
+            blockTimestamp,
+            transactionTreeRoot,
+            parentHash,
+            witnessAddress,
+            stakeData
         ):
             return .tron(
                 blockNumber: UInt64(blockNumber),
@@ -70,53 +69,53 @@ extension GemTransactionLoadMetadata {
                 witnessAddress: witnessAddress,
                 stakeData: stakeData.map()
             )
-        case .sui(let messageBytes):
+        case let .sui(messageBytes):
             return .sui(messageBytes: messageBytes)
-        case .hyperliquid(let order):
+        case let .hyperliquid(order):
             return .hyperliquid(order: order?.map())
         }
     }
 }
 
-extension TransactionLoadMetadata {
-    public func map() -> GemTransactionLoadMetadata {
+public extension TransactionLoadMetadata {
+    func map() -> GemTransactionLoadMetadata {
         switch self {
         case .none:
             return .none
-        case .solana(let senderTokenAddress, let recipientTokenAddress, let tokenProgram, let blockHash):
+        case let .solana(senderTokenAddress, recipientTokenAddress, tokenProgram, blockHash):
             return .solana(
                 senderTokenAddress: senderTokenAddress,
                 recipientTokenAddress: recipientTokenAddress,
                 tokenProgram: tokenProgram?.map(),
                 blockHash: blockHash
             )
-        case .ton(let senderTokenAddress, let recipientTokenAddress, let sequence):
+        case let .ton(senderTokenAddress, recipientTokenAddress, sequence):
             return .ton(senderTokenAddress: senderTokenAddress, recipientTokenAddress: recipientTokenAddress, sequence: sequence)
-        case .cosmos(let accountNumber, let sequence, let chainId):
+        case let .cosmos(accountNumber, sequence, chainId):
             return .cosmos(accountNumber: UInt64(accountNumber), sequence: sequence, chainId: chainId)
-        case .bitcoin(let utxos):
+        case let .bitcoin(utxos):
             return .bitcoin(utxos: utxos.map { $0.map() })
-        case .zcash(let utxos, let branchId):
+        case let .zcash(utxos, branchId):
             return .zcash(utxos: utxos.map { $0.map() }, branchId: branchId)
-        case .cardano(let utxos):
+        case let .cardano(utxos):
             return .cardano(utxos: utxos.map { $0.map() })
-        case .evm(let nonce, let chainId, let contractCall):
+        case let .evm(nonce, chainId, contractCall):
             return .evm(
                 nonce: UInt64(nonce),
                 chainId: UInt64(chainId),
                 contractCall: contractCall?.map()
             )
-        case .near(let sequence, let blockHash):
+        case let .near(sequence, blockHash):
             return .near(sequence: sequence, blockHash: blockHash)
-        case .stellar(let sequence, let isDestinationAddressExist):
+        case let .stellar(sequence, isDestinationAddressExist):
             return .stellar(sequence: sequence, isDestinationAddressExist: isDestinationAddressExist)
-        case .xrp(let sequence, let blockNumber):
+        case let .xrp(sequence, blockNumber):
             return .xrp(sequence: sequence, blockNumber: blockNumber)
-        case .algorand(let sequence, let blockHash, let chainId):
+        case let .algorand(sequence, blockHash, chainId):
             return .algorand(sequence: sequence, blockHash: blockHash, chainId: chainId)
-        case .aptos(let sequence, let gasLimit, let data):
-            return .aptos(sequence: sequence, gasLimit: gasLimit, data: data)
-        case .polkadot(let sequence, let genesisHash, let blockHash, let blockNumber, let specVersion, let transactionVersion, let period):
+        case let .aptos(sequence, data):
+            return .aptos(sequence: sequence, data: data)
+        case let .polkadot(sequence, genesisHash, blockHash, blockNumber, specVersion, transactionVersion, period):
             return .polkadot(
                 sequence: sequence,
                 genesisHash: genesisHash,
@@ -126,14 +125,14 @@ extension TransactionLoadMetadata {
                 transactionVersion: transactionVersion,
                 period: UInt64(period)
             )
-        case .tron(
-            let blockNumber,
-            let blockVersion,
-            let blockTimestamp,
-            let transactionTreeRoot,
-            let parentHash,
-            let witnessAddress,
-            let stakeData
+        case let .tron(
+            blockNumber,
+            blockVersion,
+            blockTimestamp,
+            transactionTreeRoot,
+            parentHash,
+            witnessAddress,
+            stakeData
         ):
             return .tron(
                 blockNumber: UInt64(blockNumber),
@@ -144,9 +143,9 @@ extension TransactionLoadMetadata {
                 witnessAddress: witnessAddress,
                 stakeData: stakeData.map()
             )
-        case .sui(let messageBytes):
+        case let .sui(messageBytes):
             return .sui(messageBytes: messageBytes)
-        case .hyperliquid(let order):
+        case let .hyperliquid(order):
             return .hyperliquid(order: order?.map())
         }
     }
@@ -155,8 +154,8 @@ extension TransactionLoadMetadata {
 extension Gemstone.TronStakeData {
     func map() -> Primitives.TronStakeData {
         switch self {
-        case .votes(let votes): .votes(votes.map { $0.map() })
-        case .unfreeze(let amounts): .unfreeze(amounts.map { $0.map() })
+        case let .votes(votes): .votes(votes.map { $0.map() })
+        case let .unfreeze(amounts): .unfreeze(amounts.map { $0.map() })
         }
     }
 }
@@ -164,8 +163,8 @@ extension Gemstone.TronStakeData {
 extension Primitives.TronStakeData {
     func map() -> Gemstone.TronStakeData {
         switch self {
-        case .votes(let votes): .votes(votes.map { $0.map() })
-        case .unfreeze(let amounts): .unfreeze(amounts.map { $0.map() })
+        case let .votes(votes): .votes(votes.map { $0.map() })
+        case let .unfreeze(amounts): .unfreeze(amounts.map { $0.map() })
         }
     }
 }

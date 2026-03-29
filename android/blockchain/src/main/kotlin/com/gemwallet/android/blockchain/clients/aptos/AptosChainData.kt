@@ -5,12 +5,10 @@ import uniffi.gemstone.GemTransactionLoadMetadata
 
 data class AptosChainData(
     val sequence: ULong,
-    val gasLimit: ULong?,
-    val data: String?,
+    val data: String? = null,
 ) : ChainSignData {
     override fun toDto(): GemTransactionLoadMetadata = GemTransactionLoadMetadata.Aptos(
         sequence = sequence,
-        gasLimit = gasLimit,
         data = data,
     )
 }
@@ -18,7 +16,6 @@ data class AptosChainData(
 fun GemTransactionLoadMetadata.Aptos.toChainData(): AptosChainData {
     return AptosChainData(
         sequence = sequence,
-        gasLimit = gasLimit,
         data = data,
     )
 }

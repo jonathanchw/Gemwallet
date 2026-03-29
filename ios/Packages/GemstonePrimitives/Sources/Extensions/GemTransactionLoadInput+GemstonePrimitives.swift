@@ -1,37 +1,49 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
-import Foundation
+import BigInt
 import Gemstone
 import Primitives
-import BigInt
 
-extension GemTransactionLoadInput {
-    public func map() throws -> TransactionInput {
-        return TransactionInput(
-            type: try inputType.map(),
-            asset: try inputType.getAsset().map(),
+public extension GemTransactionLoadInput {
+    static func map(signerInput: Primitives.SignerInput) throws -> GemTransactionLoadInput {
+        try GemTransactionLoadInput(
+            inputType: signerInput.type.withGasLimit(signerInput.fee.gasLimit.description).map(),
+            senderAddress: signerInput.senderAddress,
+            destinationAddress: signerInput.destinationAddress,
+            value: signerInput.value.description,
+            gasPrice: signerInput.fee.gasPriceType.map(),
+            memo: signerInput.memo,
+            isMaxValue: signerInput.useMaxAmount,
+            metadata: signerInput.metadata.map()
+        )
+    }
+
+    func map() throws -> TransactionInput {
+        return try TransactionInput(
+            type: inputType.map(),
+            asset: inputType.getAsset().map(),
             senderAddress: senderAddress,
             destinationAddress: destinationAddress,
-            value: try BigInt.from(string: value),
+            value: BigInt.from(string: value),
             balance: BigInt.zero, // Would need to be provided from context
-            gasPrice: try gasPrice.map(),
+            gasPrice: gasPrice.map(),
             memo: memo,
-            metadata: try self.metadata.map()
+            metadata: metadata.map()
         )
     }
 }
 
-extension TransactionInput {
-    public func map() throws -> GemTransactionLoadInput {
-        GemTransactionLoadInput(
-            inputType: try self.type.map(),
+public extension TransactionInput {
+    func map() throws -> GemTransactionLoadInput {
+        try GemTransactionLoadInput(
+            inputType: type.map(),
             senderAddress: senderAddress,
             destinationAddress: destinationAddress,
             value: value.description,
             gasPrice: gasPrice.map(),
             memo: memo,
             isMaxValue: feeInput.isMaxAmount,
-            metadata: self.metadata.map() 
+            metadata: metadata.map()
         )
     }
 }
