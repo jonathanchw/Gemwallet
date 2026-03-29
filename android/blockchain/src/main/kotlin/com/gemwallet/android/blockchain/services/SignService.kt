@@ -7,6 +7,8 @@ import com.gemwallet.android.model.ChainSignData
 import com.gemwallet.android.model.ConfirmParams
 import com.gemwallet.android.model.Fee
 import com.wallet.core.primitives.Chain
+import com.gemwallet.android.ext.toChainType
+import com.wallet.core.primitives.ChainType
 import uniffi.gemstone.GemChainSigner
 import java.math.BigInteger
 
@@ -307,59 +309,13 @@ class SignService : SignClient {
     }
     
     override fun supported(chain: Chain): Boolean {
-        return when(chain) {
-            Chain.HyperCore,
-            Chain.Aptos,
-            Chain.Sui -> true
-            Chain.Bitcoin,
-            Chain.BitcoinCash,
-            Chain.Litecoin,
-            Chain.Ethereum,
-            Chain.SmartChain,
-            Chain.Solana,
-            Chain.Polygon,
-            Chain.Thorchain,
-            Chain.Cosmos,
-            Chain.Osmosis,
-            Chain.Arbitrum,
-            Chain.Ton,
-            Chain.Tron,
-            Chain.Doge,
-            Chain.Zcash,
-            Chain.Optimism,
-            Chain.Base,
-            Chain.AvalancheC,
-            Chain.Xrp,
-            Chain.OpBNB,
-            Chain.Fantom,
-            Chain.Gnosis,
-            Chain.Celestia,
-            Chain.Injective,
-            Chain.Sei,
-            Chain.Manta,
-            Chain.Blast,
-            Chain.Noble,
-            Chain.ZkSync,
-            Chain.Linea,
-            Chain.Mantle,
-            Chain.Celo,
-            Chain.Near,
-            Chain.World,
-            Chain.Stellar,
-            Chain.Sonic,
-            Chain.Algorand,
-            Chain.Polkadot,
-            Chain.Plasma,
-            Chain.Cardano,
-            Chain.Abstract,
-            Chain.Berachain,
-            Chain.Ink,
-            Chain.Unichain,
-            Chain.Hyperliquid,
-            Chain.Monad,
-            Chain.XLayer,
-            Chain.Stable -> false
-        } 
+        return when(chain.toChainType()) {
+            ChainType.Ethereum,
+            ChainType.Aptos,
+            ChainType.Sui,
+            ChainType.HyperCore -> true
+            else -> false
+        }
     }
 
     private fun buildSignerInput(

@@ -86,13 +86,13 @@ fun Chart(
                 minIndex to rememberDefaultCartesianMarker(
                     persistentLabel,
                     labelPosition = DefaultCartesianMarker.LabelPosition.Bottom,
-                    valueFormatter = { _, targets ->
+                    valueFormatter = { _, _ ->
                         chartPoints[minIndex].yLabel ?: "~"
                     }
                 ),
                 maxIndex to rememberDefaultCartesianMarker(
                     persistentLabel,
-                    valueFormatter = { _, targets ->
+                    valueFormatter = { _, _ ->
                         chartPoints[maxIndex].yLabel ?: "~"
                     }
                 )
@@ -168,8 +168,8 @@ fun Chart(
                                     }
                                 ),
                                 marker = rememberMarker(labelPosition = DefaultCartesianMarker.LabelPosition.AroundPoint),
-                                persistentMarkers = { extraStore ->
-                                    persistentMarkers.forEach { index, marker ->
+                                persistentMarkers = { _ ->
+                                    persistentMarkers.forEach { (index, marker) ->
                                         marker at index
                                     }
                                 },

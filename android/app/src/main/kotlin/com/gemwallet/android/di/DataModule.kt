@@ -6,7 +6,6 @@ import com.gemwallet.android.blockchain.clients.algorand.AlgorandSignClient
 import com.gemwallet.android.blockchain.clients.bitcoin.BitcoinSignClient
 import com.gemwallet.android.blockchain.clients.cardano.CardanoSignClient
 import com.gemwallet.android.blockchain.clients.cosmos.CosmosSignClient
-import com.gemwallet.android.blockchain.clients.ethereum.EvmSignClient
 import com.gemwallet.android.blockchain.clients.near.NearSignClient
 import com.gemwallet.android.blockchain.clients.polkadot.PolkadotSignClient
 import com.gemwallet.android.blockchain.clients.solana.SolanaSignClient
@@ -67,7 +66,6 @@ object DataModule {
     ): SignClientProxy = SignClientProxy(
         clients = Chain.available().mapNotNull {
             when (it.toChainType()) {
-                ChainType.Ethereum -> EvmSignClient(it)
                 ChainType.Bitcoin -> BitcoinSignClient(it)
                 ChainType.Solana -> SolanaSignClient(it, assetsRepository)
                 ChainType.Cosmos -> CosmosSignClient(it)
@@ -80,6 +78,7 @@ object DataModule {
                 ChainType.Stellar -> StellarSignClient(it)
                 ChainType.Polkadot -> PolkadotSignClient(it)
                 ChainType.Cardano -> CardanoSignClient(it)
+                ChainType.Ethereum,
                 ChainType.Aptos,
                 ChainType.Sui,
                 ChainType.HyperCore -> return@mapNotNull null
