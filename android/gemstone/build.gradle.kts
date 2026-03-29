@@ -37,12 +37,18 @@ android {
 
     sourceSets {
         getByName("main") {
-            kotlin.srcDirs(generatedKotlinDir)
-            jniLibs.srcDirs(jniLibsDir)
+            kotlin {
+                directories.add(generatedKotlinDir.absolutePath)
+            }
+            jniLibs {
+                directories.add(jniLibsDir.absolutePath)
+            }
             manifest.srcFile(gemstoneSrc.resolve("main/AndroidManifest.xml"))
         }
         getByName("androidTest") {
-            kotlin.srcDirs(gemstoneSrc.resolve("androidTest/java"))
+            kotlin {
+                directories.add(gemstoneSrc.resolve("androidTest/java").absolutePath)
+            }
         }
     }
 }
