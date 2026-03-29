@@ -13,6 +13,7 @@ just test-all               # run all tests
 just test AssetsTests       # run a specific test target
 just test-ui                # run UI tests
 just lint                   # run SwiftLint with autofix
+just format                 # run SwiftFormat
 ```
 
 ## Generation and Localization
@@ -29,7 +30,7 @@ just localize               # update localization files
 
 ```bash
 just spm-resolve-all
-swiftformat .               # format Swift sources when needed
+just format                 # format Swift sources when needed
 ```
 
 ## Command Rules

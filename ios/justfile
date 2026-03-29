@@ -48,6 +48,10 @@ lint:
     @echo "==> Running SwiftLint"
     @swiftlint --fix --quiet
 
+format:
+    @echo "==> Running SwiftFormat"
+    @swiftformat .
+
 _build action extra_flags="":
     @set -o pipefail && xcodebuild -project Gem.xcodeproj \
     -scheme Gem \

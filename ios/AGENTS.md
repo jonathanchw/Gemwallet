@@ -27,6 +27,6 @@ Read `core/AGENTS.md` when the task touches `core/`, generated bindings, or file
 Before finishing an iOS task:
 1. Run `just build`
 2. Run the relevant tests with `just test ...` or `just test-all`
-3. Run `just lint` and format with `swiftformat .` when Swift code changed
+3. Run `just lint` and `just format` when Swift code changed
 4. If generated files or `core/` changed, run the required generation step and verify iOS still builds
 5. Keep imports clean and remove dead code
