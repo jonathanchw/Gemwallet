@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -26,6 +25,7 @@ import com.gemwallet.android.ui.components.InfoButton
 import com.gemwallet.android.ui.components.InfoSheetEntity
 import com.gemwallet.android.ui.components.image.AsyncImage
 import com.gemwallet.android.ui.components.list_item.ListItem
+import com.gemwallet.android.ui.components.list_item.ListItemDefaults
 import com.gemwallet.android.ui.models.ListPosition
 import com.gemwallet.android.ui.theme.Spacer8
 import com.gemwallet.android.ui.theme.paddingMiddle
@@ -127,10 +127,11 @@ fun PropertyItem(
     listPosition: ListPosition = ListPosition.Middle,
 ) {
     ListItem(
-        modifier = modifier.then(Modifier.height(56.dp)),
+        modifier = modifier,
         title = title,
         trailing = data,
         listPosition = listPosition,
+        minHeight = ListItemDefaults.plainMinHeight,
     )
 }
 

@@ -36,6 +36,7 @@ import com.gemwallet.android.ui.components.buttons.MainActionButton
 import com.gemwallet.android.ui.components.list_head.CenteredListHead
 import com.gemwallet.android.ui.components.list_head.CenteredListHeadSubtitleLayout
 import com.gemwallet.android.ui.components.list_item.ListItem
+import com.gemwallet.android.ui.components.list_item.ListItemDefaults
 import com.gemwallet.android.ui.components.list_item.SubheaderItem
 import com.gemwallet.android.ui.components.list_item.WalletItem
 import com.gemwallet.android.ui.components.list_item.property.DataBadgeChevron
@@ -216,6 +217,7 @@ private fun LazyListScope.permissionsContent() {
     itemsIndexed(permissions) { index, item ->
         ListItem(
             listPosition = ListPosition.getPosition(index, permissions.size),
+            minHeight = ListItemDefaults.plainMinHeight,
             leading = {
                 Icon(
                     imageVector = Icons.Default.Check,
@@ -227,4 +229,3 @@ private fun LazyListScope.permissionsContent() {
         )
     }
 }
-
