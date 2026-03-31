@@ -75,7 +75,7 @@ public extension ConnectionsService {
 
 extension ConnectionsService {
     private func disconnect(sessionId: String) async throws {
-        try store.delete(ids: [sessionId])
+        _ = try store.delete(ids: [sessionId])
         try await connector.disconnect(sessionId: sessionId)
     }
 
