@@ -5,9 +5,9 @@
 import Foundation
 
 public enum WalletConnectCAIP2: String, Codable, Sendable {
-	case eip155
-	case solana
-	case cosmos
-	case algorand
-	case sui
+    case eip155
+    case solana
+    case cosmos
+    case algorand
+    case sui
 }

@@ -5,7 +5,6 @@ import GRDB
 import Primitives
 
 public struct TransactionStore: Sendable {
-
     let db: DatabaseQueue
 
     public init(db: DB) {
@@ -13,7 +12,7 @@ public struct TransactionStore: Sendable {
     }
 
     public func getTransactionWallets(
-        states: [TransactionState]
+        states: [TransactionState],
     ) throws -> [TransactionWallet] {
         try db.read { db in
             try TransactionRecord
@@ -42,7 +41,7 @@ public struct TransactionStore: Sendable {
                 .fetchAll(db)
         }
     }
-    
+
     public func getTransaction(walletId: WalletId, transactionId: String) throws -> TransactionExtended {
         try db.read { db in
             try TransactionRequest(walletId: walletId, transactionId: transactionId).fetch(db)
@@ -60,7 +59,7 @@ public struct TransactionStore: Sendable {
                     try TransactionAssetAssociationRecord
                         .filter(TransactionAssetAssociationRecord.Columns.transactionId == id)
                         .deleteAll(db)
-                    
+
                     try transaction.assetIds.forEach {
                         try TransactionAssetAssociationRecord(transactionId: id, assetId: $0).upsert(db)
                     }
@@ -89,7 +88,7 @@ public struct TransactionStore: Sendable {
         let string = try JSONEncoder().encode(metadata).encodeString()
         try updateValues(
             id: transactionId,
-            values: [TransactionRecord.Columns.metadata.set(to: string)]
+            values: [TransactionRecord.Columns.metadata.set(to: string)],
         )
     }
 
@@ -98,7 +97,7 @@ public struct TransactionStore: Sendable {
             // should not exist in most cases. delete
             try deleteTransactionId(ids: [oldTransactionId])
         } else {
-            return try db.write { db in
+            try db.write { db in
                 try TransactionRecord
                     .filter(TransactionRecord.Columns.transactionId == oldTransactionId)
                     .updateAll(db, [
@@ -110,7 +109,7 @@ public struct TransactionStore: Sendable {
     }
 
     private func isExist(transactionId: String) throws -> Bool {
-        return try db.read { db in
+        try db.read { db in
             try TransactionRecord
                 .filter(TransactionRecord.Columns.transactionId == transactionId)
                 .fetchCount(db) > 0
@@ -118,7 +117,7 @@ public struct TransactionStore: Sendable {
     }
 
     public func deleteTransactionId(ids: [String]) throws {
-        return try db.write { db in
+        try db.write { db in
             try TransactionRecord
                 .filter(ids.contains(TransactionRecord.Columns.transactionId))
                 .deleteAll(db)
@@ -126,7 +125,7 @@ public struct TransactionStore: Sendable {
     }
 
     private func updateValues(id: String, values: [ColumnAssignment]) throws {
-        return try db.write { db in
+        try db.write { db in
             try TransactionRecord
                 .filter(TransactionRecord.Columns.transactionId == id)
                 .updateAll(db, values)

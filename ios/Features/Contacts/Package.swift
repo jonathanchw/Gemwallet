@@ -11,7 +11,8 @@ let package = Package(
     products: [
         .library(
             name: "Contacts",
-            targets: ["Contacts"]),
+            targets: ["Contacts"],
+        ),
     ],
     dependencies: [
         .package(name: "Primitives", path: "../../Packages/Primitives"),
@@ -46,7 +47,7 @@ let package = Package(
                 .product(name: "WalletCorePrimitives", package: "WalletCore"),
                 .product(name: "NameService", package: "ChainServices"),
             ],
-            path: "Sources"
+            path: "Sources",
         ),
         .testTarget(
             name: "ContactsTests",
@@ -58,7 +59,7 @@ let package = Package(
                 .product(name: "StoreTestKit", package: "Store"),
                 .product(name: "ContactService", package: "FeatureServices"),
                 .product(name: "NameServiceTestKit", package: "ChainServices"),
-            ]
+            ],
         ),
-    ]
+    ],
 )

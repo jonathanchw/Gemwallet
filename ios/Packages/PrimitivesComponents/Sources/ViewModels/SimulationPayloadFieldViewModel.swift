@@ -16,7 +16,7 @@ public struct SimulationPayloadFieldViewModel: Identifiable {
         field: SimulationPayloadField,
         chain: Chain,
         addressName: AddressName? = nil,
-        relativeDateFormatter: RelativeDateFormatter = RelativeDateFormatter()
+        relativeDateFormatter: RelativeDateFormatter = RelativeDateFormatter(),
     ) {
         self.field = field
         self.chain = chain
@@ -67,5 +67,4 @@ public struct SimulationPayloadFieldViewModel: Identifiable {
     public var contextMenuItems: [ContextMenuItemType] {
         field.fieldType == .address ? [.copy(value: field.value)] : []
     }
-
 }

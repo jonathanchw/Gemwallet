@@ -1,12 +1,12 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
-import Testing
-import PrimitivesTestKit
 @testable import Formatters
+import PrimitivesTestKit
+import Testing
 
 final class AddressFormatterTests {
     @Test
-    func testShort() {
+    func short() {
         #expect(AddressFormatter(address: "0x12312321321312", chain: .ethereum).value() == "0x12312...21312")
         #expect(AddressFormatter(address: "0x12312321321312", chain: .aptos).value() == "0x1231...21312")
         #expect(AddressFormatter(address: "GLNvG5Ly4cK512oQeJqnwLftwfoPZ4skyDwZWzxorYQ9", chain: .solana).value() == "GLNvG...orYQ9")

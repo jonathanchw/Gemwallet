@@ -1,5 +1,5 @@
-import Testing
 @testable import Primitives
+import Testing
 
 struct VerificationStatusTests {
     @Test

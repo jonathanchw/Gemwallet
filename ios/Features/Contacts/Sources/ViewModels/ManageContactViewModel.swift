@@ -1,22 +1,21 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
+import Components
+import ContactService
+import Formatters
 import Foundation
+import GemstonePrimitives
+import Localization
+import Primitives
+import PrimitivesComponents
+import Style
 import SwiftUI
 import UIKit
-import Primitives
-import ContactService
-import PrimitivesComponents
 import Validators
-import GemstonePrimitives
-import Components
-import Style
-import Localization
-import Formatters
 
 @Observable
 @MainActor
 public final class ManageContactViewModel {
-
     public enum Mode {
         case add
         case edit(ContactData)
@@ -24,7 +23,7 @@ public final class ManageContactViewModel {
         var contact: Contact? {
             switch self {
             case .add: nil
-            case .edit(let contactData): contactData.contact
+            case let .edit(contactData): contactData.contact
             }
         }
     }
@@ -43,25 +42,25 @@ public final class ManageContactViewModel {
     public init(
         service: ContactService,
         nameService: any NameServiceable,
-        mode: Mode
+        mode: Mode,
     ) {
         self.service = service
         self.nameService = nameService
         self.mode = mode
 
-        self.nameInputModel = InputValidationViewModel(
+        nameInputModel = InputValidationViewModel(
             mode: .onDemand,
-            validators: [.required(requireName: Localized.Wallet.name)]
+            validators: [.required(requireName: Localized.Wallet.name)],
         )
 
         switch mode {
         case .add:
-            self.contactId = UUID().uuidString
-        case .edit(let contactData):
-            self.contactId = contactData.contact.id
-            self.nameInputModel.text = contactData.contact.name
-            self.description = contactData.contact.description ?? ""
-            self.addresses = contactData.addresses
+            contactId = UUID().uuidString
+        case let .edit(contactData):
+            contactId = contactData.contact.id
+            nameInputModel.text = contactData.contact.name
+            description = contactData.contact.description ?? ""
+            addresses = contactData.addresses
         }
     }
 
@@ -73,6 +72,7 @@ public final class ManageContactViewModel {
         case .edit: false
         }
     }
+
     var buttonTitle: String { Localized.Common.save }
     var nameTitle: String { Localized.Wallet.name }
     var descriptionTitle: String { Localized.Common.description }
@@ -81,7 +81,8 @@ public final class ManageContactViewModel {
 
     var buttonState: ButtonState {
         guard nameInputModel.isValid,
-              nameInputModel.text.isNotEmpty else {
+              nameInputModel.text.isNotEmpty
+        else {
             return .disabled
         }
 
@@ -93,15 +94,15 @@ public final class ManageContactViewModel {
             id: contactId,
             name: nameInputModel.text.trim(),
             description: description.isEmpty ? nil : description,
-            createdAt: mode.contact?.createdAt ?? .now
+            createdAt: mode.contact?.createdAt ?? .now,
         )
     }
-    
+
     func listItemModel(for address: ContactAddress) -> ListItemModel {
         ListItemModel(
             title: address.chain.asset.name,
             titleExtra: AddressFormatter(style: .short, address: address.address, chain: address.chain).value(),
-            imageStyle: .asset(assetImage: AssetIdViewModel(assetId: address.chain.assetId).assetImage)
+            imageStyle: .asset(assetImage: AssetIdViewModel(assetId: address.chain.assetId).assetImage),
         )
     }
 

@@ -8,7 +8,7 @@ public extension SimulationPayloadField {
     }
 }
 
-public extension Array where Element == SimulationPayloadField {
+public extension [SimulationPayloadField] {
     var primaryFields: [SimulationPayloadField] {
         filter(\.isPrimary)
     }

@@ -11,7 +11,8 @@ let package = Package(
     products: [
         .library(
             name: "NFT",
-            targets: ["NFT"]),
+            targets: ["NFT"],
+        ),
     ],
     dependencies: [
         .package(name: "Primitives", path: "../../Packages/Primitives"),
@@ -45,7 +46,7 @@ let package = Package(
                 .product(name: "AvatarService", package: "FeatureServices"),
                 "InfoSheet",
             ],
-            path: "Sources"
+            path: "Sources",
         ),
         .testTarget(
             name: "NFTTests",
@@ -57,8 +58,8 @@ let package = Package(
                 "NFT",
                 "PrimitivesComponents",
                 .product(name: "AvatarService", package: "FeatureServices"),
-                "Store"
-            ]
-        )
-    ]
+                "Store",
+            ],
+        ),
+    ],
 )

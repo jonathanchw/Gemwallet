@@ -1,13 +1,13 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
-import Primitives
-import Localization
 import BigInt
-import SwiftUI
-import Style
+import Formatters
 import Gemstone
 import GemstonePrimitives
-import Formatters
+import Localization
+import Primitives
+import Style
+import SwiftUI
 
 struct PriceImpactViewModel {
     let fromAssetPrice: AssetPriceValue
@@ -29,6 +29,7 @@ struct PriceImpactViewModel {
     var highImpactWarningTitle: String {
         Localized.Swap.PriceImpactWarning.title
     }
+
     var highImpactWarningDescription: String? {
         guard let priceImpactText else { return nil }
         return Localized.Swap.PriceImpactWarning.description(priceImpactText, fromAssetPrice.asset.symbol)
@@ -40,7 +41,7 @@ struct PriceImpactViewModel {
 
         return PriceImpactValue(
             type: swapPriceImpact.impactType.map(),
-            value: percentFormatter.string(swapPriceImpact.percentage)
+            value: percentFormatter.string(swapPriceImpact.percentage),
         )
     }
 
@@ -58,7 +59,7 @@ struct PriceImpactViewModel {
 
         return TextStyle(
             font: .callout,
-            color: color
+            color: color,
         )
     }
 }

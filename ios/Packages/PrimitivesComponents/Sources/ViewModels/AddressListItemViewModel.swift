@@ -1,14 +1,13 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
-import Foundation
-import Primitives
-import Localization
 import Components
 import Formatters
+import Foundation
+import Localization
+import Primitives
 import Style
 
 public struct AddressListItemViewModel {
-
     public enum Mode {
         case auto(addressStyle: AddressFormatter.Style)
         case address(addressStyle: AddressFormatter.Style)
@@ -24,7 +23,7 @@ public struct AddressListItemViewModel {
         title: String,
         account: SimpleAccount,
         mode: Mode,
-        addressLink: BlockExplorerLink
+        addressLink: BlockExplorerLink,
     ) {
         self.title = title
         self.account = account
@@ -34,12 +33,12 @@ public struct AddressListItemViewModel {
 
     public var subtitle: String {
         switch mode {
-        case .auto(let style): auto(for: style)
-        case .address(let style): address(for: style)
+        case let .auto(style): auto(for: style)
+        case let .address(style): address(for: style)
         case .nameOrAddress: account.name ?? account.address
         }
     }
-    
+
     public var assetImage: AssetImage? {
         account.assetImage
     }
@@ -65,7 +64,7 @@ public struct AddressListItemViewModel {
     public var addressExplorerUrl: URL {
         addressLink.url
     }
-    
+
     public var canToggleAddress: Bool {
         guard let name = account.name, name.isNotEmpty else {
             return false
@@ -78,7 +77,7 @@ public struct AddressListItemViewModel {
     }
 
     // MARK: - Private methods
-    
+
     private func auto(for style: AddressFormatter.Style) -> String {
         if account.name == account.address || account.name == nil {
             return address(for: style)

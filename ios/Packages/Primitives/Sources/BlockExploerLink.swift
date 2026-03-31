@@ -2,8 +2,8 @@
 
 import Foundation
 
-extension BlockExplorerLink {
-    public var url: URL {
+public extension BlockExplorerLink {
+    var url: URL {
         URL(string: link)!
     }
 }

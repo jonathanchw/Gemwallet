@@ -6,7 +6,7 @@ public final class NumberIncrementer<T: FixedWidthInteger> {
     private var value: T
 
     public init(_ initialValue: T) {
-        self.value = initialValue
+        value = initialValue
     }
 
     @discardableResult

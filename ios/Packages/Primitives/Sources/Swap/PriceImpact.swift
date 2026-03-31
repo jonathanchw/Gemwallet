@@ -5,8 +5,8 @@
 import Foundation
 
 public enum SwapPriceImpactType: String, Codable, Equatable, Hashable, Sendable {
-    case positive
-    case low
-    case medium
-    case high
+	case positive
+	case low
+	case medium
+	case high
 }
