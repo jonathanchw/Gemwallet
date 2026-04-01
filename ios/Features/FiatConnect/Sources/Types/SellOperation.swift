@@ -16,7 +16,7 @@ struct SellOperation: FiatOperation {
 
     private let config = FiatOperationConfig(
         defaultAmount: 100,
-        minimumAmount: 25,
+        minimumAmount: 5,
         maximumAmount: 10000,
     )
 

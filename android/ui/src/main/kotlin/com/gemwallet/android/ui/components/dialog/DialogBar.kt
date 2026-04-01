@@ -1,72 +1,59 @@
 package com.gemwallet.android.ui.components.dialog
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import com.gemwallet.android.ui.R
 import com.gemwallet.android.ui.theme.alpha10
+import com.gemwallet.android.ui.theme.alpha50
+import com.gemwallet.android.ui.theme.iconSize
 import com.gemwallet.android.ui.theme.paddingDefault
+import com.gemwallet.android.ui.theme.paddingSmall
+import com.gemwallet.android.ui.theme.space4
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DialogBar(
-    title: String? = null,
     onDismissRequest: () -> Unit,
     showDismissAction: Boolean = true,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = paddingDefault),
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BottomSheetDefaults.DragHandle(
-            modifier = Modifier.align(Alignment.TopCenter),
-            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.45f),
+        Box(
+            modifier = Modifier
+                .padding(top = paddingDefault, bottom = paddingSmall)
+                .width(iconSize)
+                .height(space4)
+                .background(
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = alpha50),
+                    shape = RoundedCornerShape(percent = 50),
+                ),
         )
-        if (showDismissAction || title != null) {
-            DialogBarHeaderContent(
+        if (showDismissAction) {
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = paddingDefault),
-                title = title,
-                showDismissAction = showDismissAction,
-                onDismissRequest = onDismissRequest,
-            )
-        }
-    }
-}
-
-@Composable
-private fun DialogBarHeaderContent(
-    modifier: Modifier,
-    title: String?,
-    showDismissAction: Boolean,
-    onDismissRequest: () -> Unit,
-) {
-    Box(modifier = modifier) {
-        if (showDismissAction) {
-            DialogBarActionButton(
-                modifier = Modifier.align(Alignment.CenterStart),
-                onClick = onDismissRequest,
-            )
-        }
-        title?.let {
-            Text(
-                text = it,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.Center),
-            )
+                    .padding(horizontal = paddingDefault),
+            ) {
+                DialogBarActionButton(
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    onClick = onDismissRequest,
+                )
+            }
         }
     }
 }

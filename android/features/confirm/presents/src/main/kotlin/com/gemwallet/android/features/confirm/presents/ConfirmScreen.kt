@@ -45,6 +45,7 @@ import com.gemwallet.android.ui.components.dialog.DialogBar
 import com.gemwallet.android.ui.components.list_head.AmountListHead
 import com.gemwallet.android.ui.components.list_head.NftHead
 import com.gemwallet.android.ui.components.list_head.SwapListHead
+import com.gemwallet.android.ui.components.list_item.SubheaderItem
 import com.gemwallet.android.ui.components.list_item.property.PropertyDataText
 import com.gemwallet.android.ui.components.list_item.property.PropertyItem
 import com.gemwallet.android.ui.components.list_item.property.PropertyNetworkFee
@@ -242,12 +243,14 @@ fun ConfirmScreen(
                 sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
                 dragHandle = {
                     DialogBar(
-                        title = stringResource(R.string.common_details),
                         onDismissRequest = { showWalletConnectDetails = false },
                     )
                 },
             ) {
                 LazyColumn {
+                    item {
+                        SubheaderItem(R.string.common_details)
+                    }
                     simulationPayloadDetailsContent(
                         primaryFields = walletConnectReview.primaryPayloadFields,
                         secondaryFields = walletConnectReview.secondaryPayloadFields,
