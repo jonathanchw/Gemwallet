@@ -22,14 +22,6 @@ public struct StreamMessagePrices: Codable, Sendable {
 	}
 }
 
-public struct StreamWalletUpdate: Codable, Sendable {
-	public let walletId: WalletId
-
-	public init(walletId: WalletId) {
-		self.walletId = walletId
-	}
-}
-
 public struct StreamNotificationlUpdate: Codable, Sendable {
 	public let walletId: WalletId
 	public let notification: InAppNotification
@@ -55,6 +47,14 @@ public struct StreamTransactionsUpdate: Codable, Sendable {
 	public init(walletId: WalletId, transactions: [TransactionId]) {
 		self.walletId = walletId
 		self.transactions = transactions
+	}
+}
+
+public struct StreamWalletUpdate: Codable, Sendable {
+	public let walletId: WalletId
+
+	public init(walletId: WalletId) {
+		self.walletId = walletId
 	}
 }
 
