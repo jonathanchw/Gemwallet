@@ -56,6 +56,15 @@ fun IconWithBadge(
     BadgedIcon(icon = icon, placeholder = placeholder, size = size, badge = badge)
 }
 
+@Composable
+fun IconWithBadge(
+    size: Dp = listItemIconSize,
+    badge: (@Composable () -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    BadgedBox(size = size, badge = badge, content = content)
+}
+
 private const val BADGE_SIZE_RATIO = 2.6f
 private val BADGE_BORDER_WIDTH = 2.dp
 
@@ -66,13 +75,24 @@ private fun BadgedIcon(
     size: Dp,
     badge: (@Composable () -> Unit)? = null,
 ) {
-    Box {
+    BadgedBox(size = size, badge = badge) {
         AsyncImage(
             model = icon,
             placeholderText = placeholder,
             contentDescription = "list_item_icon",
             size = size,
         )
+    }
+}
+
+@Composable
+private fun BadgedBox(
+    size: Dp,
+    badge: (@Composable () -> Unit)?,
+    content: @Composable () -> Unit,
+) {
+    Box {
+        content()
         if (badge != null) {
             val badgeSize = size / BADGE_SIZE_RATIO + BADGE_BORDER_WIDTH * 2
             val badgeOffset = badgeSize / 4
