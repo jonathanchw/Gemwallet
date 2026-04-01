@@ -48,6 +48,7 @@ fun StakeScene(
     inSync: Boolean,
     assetInfo: AssetInfo,
     actions: List<StakeAction>,
+    isStakeEnabled: Boolean,
     delegations: List<Delegation>,
     amountAction: AmountTransactionAction,
     onRefresh: () -> Unit,
@@ -89,6 +90,7 @@ fun StakeScene(
 
                 stakeActions(
                     actions = actions,
+                    isStakeEnabled = isStakeEnabled,
                     assetId = assetInfo.id(),
                     amountAction = amountAction,
                     onConfirm = onConfirm,
