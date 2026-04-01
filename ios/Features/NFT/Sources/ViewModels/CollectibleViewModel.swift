@@ -3,8 +3,8 @@
 import AvatarService
 import Components
 import ExplorerService
-import Formatters
 import Foundation
+import GemstonePrimitives
 import ImageGalleryService
 import InfoSheet
 import Localization

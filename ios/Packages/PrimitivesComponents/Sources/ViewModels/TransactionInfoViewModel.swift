@@ -6,7 +6,7 @@ import Formatters
 import Foundation
 import Primitives
 
-internal import GemstonePrimitives
+import GemstonePrimitives
 
 public struct TransactionInfoViewModel: Sendable {
     private let asset: Asset

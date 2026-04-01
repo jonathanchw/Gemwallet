@@ -1,8 +1,8 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
 import Components
-import Formatters
 import Foundation
+import GemstonePrimitives
 import Primitives
 
 struct WalletRecipientSectionViewModel {

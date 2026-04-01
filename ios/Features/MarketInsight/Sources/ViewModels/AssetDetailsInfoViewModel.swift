@@ -1,8 +1,8 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
 import ExplorerService
-import Formatters
 import Foundation
+import GemstonePrimitives
 import Localization
 import Preferences
 import Primitives

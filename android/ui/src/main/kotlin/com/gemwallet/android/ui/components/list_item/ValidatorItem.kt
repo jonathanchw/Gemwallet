@@ -11,10 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gemwallet.android.Constants
+import com.gemwallet.android.domains.percentage.PercentageFormatterStyle
+import com.gemwallet.android.domains.percentage.formatAsPercentage
 import com.gemwallet.android.ui.R
 import com.gemwallet.android.ui.components.image.IconWithBadge
 import com.gemwallet.android.ui.models.ListPosition
-import com.gemwallet.android.ui.models.PriceUIState
 import com.gemwallet.android.ui.theme.WalletTheme
 import com.gemwallet.android.ui.theme.space4
 import com.wallet.core.primitives.Chain
@@ -69,7 +70,7 @@ fun ValidatorItem(
 }
 
 fun DelegationValidator.formatApr(): String {
-    return PriceUIState.formatPercentage(apr, showSign = false, showZero = true)
+    return apr.formatAsPercentage(style = PercentageFormatterStyle.PercentSignLess)
 }
 
 fun DelegationValidator.getIconUrl(): String {

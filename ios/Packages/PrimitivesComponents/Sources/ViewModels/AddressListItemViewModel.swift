@@ -1,16 +1,30 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
 import Components
-import Formatters
 import Foundation
+import GemstonePrimitives
 import Localization
 import Primitives
 import Style
 
 public struct AddressListItemViewModel {
+    public enum AddressStyle {
+        case short
+        case full
+        case extra(Int)
+
+        fileprivate var formatterStyle: AddressFormatter.Style {
+            switch self {
+            case .short: .short
+            case .full: .full
+            case let .extra(extra): .extra(extra)
+            }
+        }
+    }
+
     public enum Mode {
-        case auto(addressStyle: AddressFormatter.Style)
-        case address(addressStyle: AddressFormatter.Style)
+        case auto(addressStyle: AddressStyle)
+        case address(addressStyle: AddressStyle)
         case nameOrAddress
     }
 
@@ -78,7 +92,7 @@ public struct AddressListItemViewModel {
 
     // MARK: - Private methods
 
-    private func auto(for style: AddressFormatter.Style) -> String {
+    private func auto(for style: AddressStyle) -> String {
         if account.name == account.address || account.name == nil {
             return address(for: style)
         } else if let _ = account.assetImage, let name = account.name {
@@ -93,7 +107,7 @@ public struct AddressListItemViewModel {
         return account.address
     }
 
-    private func address(for style: AddressFormatter.Style) -> String {
-        AddressFormatter(style: style, address: account.address, chain: account.chain).value()
+    private func address(for style: AddressStyle) -> String {
+        AddressFormatter(style: style.formatterStyle, address: account.address, chain: account.chain).value()
     }
 }

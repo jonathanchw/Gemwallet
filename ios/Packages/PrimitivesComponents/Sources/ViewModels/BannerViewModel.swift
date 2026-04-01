@@ -8,7 +8,7 @@ import Primitives
 import Style
 import SwiftUI
 
-internal import GemstonePrimitives
+import GemstonePrimitives
 
 struct BannerViewModel {
     enum BannerViewType {

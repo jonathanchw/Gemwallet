@@ -2,7 +2,6 @@
 
 import Components
 import ContactService
-import Formatters
 import Foundation
 import GemstonePrimitives
 import Localization

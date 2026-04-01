@@ -60,6 +60,21 @@ class SwapDetailsUIModelFactoryTest {
     }
 
     @Test
+    fun `price impact uses shared ios rounding behavior`() {
+        val result = swapDetails(
+            toValue = DEFAULT_TO_VALUE,
+            priceImpact = SwapPriceImpact(
+                percentage = 2.345,
+                impactType = SwapPriceImpactType.POSITIVE,
+                isHigh = false,
+            ),
+        )
+
+        assertEquals("+2.34%", result!!.priceImpact!!.displayText)
+        assertEquals("2.34%", result.priceImpact.warningText)
+    }
+
+    @Test
     fun `estimated time matches ios minute truncation`() {
         assertNull(swapDetails(toValue = "950000000000000000", etaInSeconds = 60u)!!.estimatedTime)
         assertEquals("≈ 1 min", swapDetails(toValue = "950000000000000000", etaInSeconds = 61u)!!.estimatedTime)

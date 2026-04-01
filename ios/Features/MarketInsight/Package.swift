@@ -17,6 +17,7 @@ let package = Package(
     dependencies: [
         .package(name: "Primitives", path: "../../Packages/Primitives"),
         .package(name: "Formatters", path: "../../Packages/Formatters"),
+        .package(name: "GemstonePrimitives", path: "../../Packages/GemstonePrimitives"),
         .package(name: "Localization", path: "../../Packages/Localization"),
         .package(name: "Store", path: "../../Packages/Store"),
         .package(name: "ChainServices", path: "../../Packages/ChainServices"),
@@ -32,6 +33,7 @@ let package = Package(
             dependencies: [
                 "Primitives",
                 "Formatters",
+                "GemstonePrimitives",
                 "Localization",
                 "Store",
                 .product(name: "ExplorerService", package: "ChainServices"),

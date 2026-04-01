@@ -2,8 +2,8 @@
 
 import Components
 import ExplorerService
-import Formatters
 import Foundation
+import GemstonePrimitives
 import Localization
 import Primitives
 import PrimitivesComponents

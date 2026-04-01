@@ -80,7 +80,7 @@ fun WalletItem(
             ListItemSupportText(
                 when (type) {
                     WalletType.Multicoin -> stringResource(R.string.wallet_multicoin)
-                    else -> walletAddress?.getAddressEllipsisText() ?: ""
+                    else -> walletAddress?.getAddressEllipsisText(chain = walletChain) ?: ""
                 },
             )
         },

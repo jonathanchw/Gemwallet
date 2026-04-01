@@ -6,6 +6,7 @@ import com.gemwallet.android.cases.banners.HasMultiSign
 import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.data.repositories.config.UserConfig
 import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.domains.percentage.PercentageFormatterStyle
 import com.gemwallet.android.domains.percentage.formatAsPercentage
 import com.gemwallet.android.domains.price.values.EquivalentValue
 import com.gemwallet.android.domains.wallet.aggregates.WalletSummaryAggregate
@@ -117,7 +118,7 @@ internal class WalletSummaryEquivalentValue(
     override val changePercentage: Double?,
 ) : EquivalentValue {
     override val changePercentageFormatted: String
-        get() = changePercentage.formatAsPercentage(isShowSign = false)
+        get() = changePercentage.formatAsPercentage(style = PercentageFormatterStyle.PercentSignLess)
 }
 
 internal data class WalletSummaryDisplayState(

@@ -6,7 +6,7 @@ import Localization
 import Primitives
 import Style
 
-internal import GemstonePrimitives
+import GemstonePrimitives
 
 public struct AssetScoreTypeViewModel {
     public let scoreType: AssetScoreType

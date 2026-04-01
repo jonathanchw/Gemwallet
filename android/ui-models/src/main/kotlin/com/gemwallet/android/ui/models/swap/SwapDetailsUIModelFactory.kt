@@ -3,17 +3,18 @@ package com.gemwallet.android.ui.models.swap
 import com.gemwallet.android.domains.asset.calculateFiat
 import com.gemwallet.android.domains.asset.formatFiat
 import com.gemwallet.android.domains.asset.getSwapProviderIcon
+import com.gemwallet.android.domains.percentage.PercentageFormatterStyle
+import com.gemwallet.android.domains.percentage.formatAsPercentage
 import com.gemwallet.android.domains.swap.AssetRateFormatter
 import com.gemwallet.android.domains.swap.toPrimitives
 import com.gemwallet.android.model.AssetInfo
 import com.gemwallet.android.model.Crypto
 import com.gemwallet.android.model.format
+import java.math.BigDecimal
 import uniffi.gemstone.SwapPriceImpact
 import uniffi.gemstone.SwapperProvider
 import uniffi.gemstone.SwapperProviderType
 import uniffi.gemstone.calculateSwapPriceImpact
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 object SwapProviderUIModelFactory {
     fun create(
@@ -85,8 +86,8 @@ object SwapDetailsUIModelFactory {
         )?.let {
             SwapPriceImpactUIModel(
                 type = it.impactType.toPrimitives(),
-                displayText = it.percentage.formatSwapPercent(),
-                warningText = it.percentage.formatSwapPercent(showSign = false),
+                displayText = it.percentage.formatAsPercentage(),
+                warningText = it.percentage.formatAsPercentage(style = PercentageFormatterStyle.PercentSignLess),
                 isHigh = it.isHigh,
             )
         }
@@ -102,7 +103,7 @@ object SwapDetailsUIModelFactory {
             rate = rate,
             priceImpact = priceImpact,
             minimumReceive = input.receiveAsset.asset.format(Crypto(minReceiveAtomic), 2, dynamicPlace = true),
-            slippageText = slippagePercent.formatSwapPercent(showSign = false),
+            slippageText = slippagePercent.formatAsPercentage(style = PercentageFormatterStyle.PercentSignLess),
             estimatedTime = input.etaInSeconds?.formatSwapEta(),
             isProviderSelectable = input.isProviderSelectable,
         )
@@ -150,20 +151,4 @@ private fun UInt.formatSwapEta(): String? {
 
     val minutes = (this / 60u).toInt().coerceAtLeast(1)
     return "≈ $minutes min"
-}
-
-private fun Double.formatSwapPercent(showSign: Boolean = true): String {
-    val roundedValue = BigDecimal.valueOf(this)
-        .setScale(2, RoundingMode.HALF_UP)
-        .toDouble()
-    val absoluteValue = kotlin.math.abs(roundedValue)
-    val text = "%.2f".format(absoluteValue)
-    val sign = when {
-        !showSign -> ""
-        roundedValue > 0 -> "+"
-        roundedValue < 0 -> "-"
-        else -> ""
-    }
-
-    return "$sign$text%"
 }
