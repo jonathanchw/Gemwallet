@@ -11,7 +11,7 @@ public protocol GemAPIConfigService: Sendable {
 public protocol GemAPIFiatService: Sendable {
     func getQuotes(walletId: String, type: FiatQuoteType, assetId: AssetId, request: FiatQuoteRequest) async throws -> [FiatQuote]
     func getQuoteUrl(walletId: String, quoteId: String) async throws -> FiatQuoteUrl
-    func getFiatTransactions(walletId: String) async throws -> [FiatTransactionInfo]
+    func getFiatTransactions(walletId: String) async throws -> [FiatTransactionData]
 }
 
 public protocol GemAPIPricesService: Sendable {
@@ -152,9 +152,9 @@ extension GemAPIService: GemAPIFiatService {
             .mapResponse(as: FiatQuoteUrl.self)
     }
 
-    public func getFiatTransactions(walletId: String) async throws -> [FiatTransactionInfo] {
+    public func getFiatTransactions(walletId: String) async throws -> [FiatTransactionData] {
         try await requestDevice(.getFiatTransactions(walletId: walletId))
-            .mapResponse(as: [FiatTransactionInfo].self)
+            .mapResponse(as: [FiatTransactionData].self)
     }
 }
 

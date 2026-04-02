@@ -184,6 +184,7 @@ struct ServicesFactory {
         )
         let fiatService = FiatService(
             apiService: apiService,
+            assetsService: assetsService,
             store: storeManager.fiatTransactionStore,
         )
         let streamEventService = StreamEventService(
