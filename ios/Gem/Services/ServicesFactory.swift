@@ -229,6 +229,8 @@ struct ServicesFactory {
             assetsListService: apiService,
             assetService: assetsService,
             assetsEnabler: assetsEnabler,
+            transactionsService: transactionsService,
+            nftService: nftService,
         )
         let walletSetupService = WalletSetupService(balanceService: balanceService)
 

@@ -5,8 +5,10 @@ import android.util.Log
 import com.gemwallet.android.application.wallet_import.coordinators.GetAvailableAssetIds
 import com.gemwallet.android.application.wallet_import.coordinators.GetImportWalletState
 import com.gemwallet.android.application.wallet_import.services.ImportAssets
+import com.gemwallet.android.application.transactions.coordinators.SyncTransactions
 import com.gemwallet.android.application.wallet_import.values.ImportWalletState
 import com.gemwallet.android.cases.device.SyncSubscription
+import com.gemwallet.android.cases.nft.SyncNfts
 import com.gemwallet.android.cases.tokens.SearchTokensCase
 import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.data.repositories.session.SessionRepository
@@ -39,6 +41,8 @@ class ImportWalletService(
     private val searchTokensCase: SearchTokensCase,
     private val assetsRepository: AssetsRepository,
     private val syncSubscription: SyncSubscription,
+    private val syncTransactions: SyncTransactions,
+    private val syncNfts: SyncNfts,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineExceptionHandler {_, _ -> }),
 ) : ImportAssets, GetImportWalletState {
 
@@ -70,6 +74,8 @@ class ImportWalletService(
                     }
                 }?.awaitAll()
                 assetsRepository.sync()
+                syncTransactions.syncTransactions(wallet)
+                syncNfts.syncNfts(wallet)
             } catch (err: Throwable) {
                 Log.d("IMPORT_ERROR", "Error:", err)
             } finally {
