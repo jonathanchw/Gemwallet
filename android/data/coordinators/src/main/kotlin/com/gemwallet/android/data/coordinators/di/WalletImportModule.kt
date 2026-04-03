@@ -1,5 +1,6 @@
 package com.gemwallet.android.data.coordinators.di
 
+import com.gemwallet.android.application.wallet_import.coordinators.GetAvailableAssetIds
 import com.gemwallet.android.application.wallet_import.coordinators.GetImportWalletState
 import com.gemwallet.android.application.wallet_import.services.ImportAssets
 import com.gemwallet.android.cases.device.SyncSubscription
@@ -20,16 +21,24 @@ object WalletImportModule {
 
     @Provides
     @Singleton
+    fun provideGetAvailableAssetIds(
+        gemDeviceApiClient: GemDeviceApiClient,
+    ): GetAvailableAssetIds = GetAvailableAssetIds { walletId ->
+        gemDeviceApiClient.getAssets(walletId = walletId, fromTimestamp = 0)
+    }
+
+    @Provides
+    @Singleton
     fun provideImportAssetsService(
         sessionRepository: SessionRepository,
-        gemDeviceApiClient: GemDeviceApiClient,
+        getAvailableAssetIds: GetAvailableAssetIds,
         searchTokensCase: SearchTokensCase,
         assetsRepository: AssetsRepository,
         syncSubscription: SyncSubscription,
     ): ImportWalletService {
         return ImportWalletService(
             sessionRepository = sessionRepository,
-            gemDeviceApiClient = gemDeviceApiClient,
+            getAvailableAssetIds = getAvailableAssetIds,
             searchTokensCase = searchTokensCase,
             assetsRepository = assetsRepository,
             syncSubscription = syncSubscription,

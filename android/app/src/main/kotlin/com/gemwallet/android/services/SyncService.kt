@@ -1,10 +1,9 @@
 package com.gemwallet.android.services
 
-import com.gemwallet.android.cases.device.SyncSubscription
 import com.gemwallet.android.application.transactions.coordinators.SyncTransactions
+import com.gemwallet.android.cases.device.SyncDeviceInfo
 import com.gemwallet.android.data.repositories.buy.BuyRepository
 import com.gemwallet.android.data.repositories.session.SessionRepository
-import com.gemwallet.android.data.repositories.wallets.WalletsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -14,10 +13,9 @@ import javax.inject.Inject
 
 class SyncService @Inject constructor(
     private val sessionRepository: SessionRepository,
-    private val walletsRepository: WalletsRepository,
     private val syncTransactions: SyncTransactions,
     private val buyRepository: BuyRepository,
-    private val syncSubscription: SyncSubscription,
+    private val syncDeviceInfo: SyncDeviceInfo,
 ) {
 
     suspend fun sync() = withContext(Dispatchers.IO) {
@@ -29,6 +27,6 @@ class SyncService @Inject constructor(
             }
         }
             .awaitAll()
-        syncSubscription.syncSubscription(walletsRepository.getAll().firstOrNull() ?: emptyList())
+        syncDeviceInfo.syncDeviceInfo()
     }
 }
