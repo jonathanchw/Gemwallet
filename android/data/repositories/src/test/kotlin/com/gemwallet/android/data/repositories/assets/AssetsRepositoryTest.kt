@@ -17,16 +17,21 @@ import com.gemwallet.android.data.service.store.database.entities.DbAssetLink
 import com.gemwallet.android.data.service.store.database.entities.DbAssetMarket
 import com.gemwallet.android.data.service.store.database.entities.DbAssetWallet
 import com.gemwallet.android.data.service.store.database.entities.DbPrice
+import com.gemwallet.android.data.service.store.database.entities.mockDbAssetInfo
 import com.gemwallet.android.domains.asset.defaultBasic
+import com.gemwallet.android.testkit.mockAccount
 import com.gemwallet.android.testkit.mockAssetFull
 import com.gemwallet.android.testkit.mockAssetLink
+import com.gemwallet.android.testkit.mockAssetMonad
 import com.gemwallet.android.testkit.mockAssetProperties
 import com.gemwallet.android.testkit.mockAssetMarket
 import com.gemwallet.android.testkit.mockAssetSolana
 import com.gemwallet.android.testkit.mockAssetSolanaUSDC
+import com.gemwallet.android.testkit.mockWallet
 import com.gemwallet.android.testkit.mockChartValuePercentage
 import com.gemwallet.android.testkit.mockPrice
 import com.wallet.core.primitives.AssetBasic
+import com.wallet.core.primitives.Chain
 import com.wallet.core.primitives.AssetScore
 import com.wallet.core.primitives.Currency
 import io.mockk.coEvery
@@ -40,6 +45,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -238,5 +244,45 @@ class AssetsRepositoryTest {
 
         assertEquals(15, assetSlot.captured.rank)
         assertEquals(asset.defaultBasic.score.rank, assetSlot.captured.rank)
+    }
+
+    @Test
+    fun swapSearch_returnsOnlyCurrentWalletEnabledAssets() = runBlocking {
+        every { getChangedTransactions.getChangedTransactions() } returns emptyFlow()
+        every { sessionRepository.session() } returns sessionFlow
+        every { assetsPriorityDao.hasPriorities("") } returns flowOf(0)
+
+        val wallet = mockWallet(
+            id = "wallet-1",
+            accounts = listOf(mockAccount(chain = Chain.Solana)),
+        )
+        val enabledAsset = mockAssetSolana()
+        val hiddenAsset = mockAssetSolanaUSDC()
+        val foreignWalletAsset = mockAssetMonad()
+
+        every {
+            assetsDao.swapSearch(
+                query = "",
+                byChains = listOf(Chain.Solana),
+                byAssets = emptyList(),
+            )
+        } returns flowOf(
+            listOf(
+                mockDbAssetInfo(asset = enabledAsset, walletId = "wallet-1", visible = true, sessionId = 1),
+                mockDbAssetInfo(asset = hiddenAsset, walletId = "wallet-1", visible = false, sessionId = 1),
+                mockDbAssetInfo(asset = foreignWalletAsset, walletId = "wallet-2", visible = true, sessionId = null),
+            )
+        )
+
+        val subject = createSubject()
+        val result = subject.swapSearch(
+            wallet = wallet,
+            query = "",
+            byChains = listOf(Chain.Solana),
+            byAssets = emptyList(),
+            tags = emptyList(),
+        ).first()
+
+        assertEquals(listOf(enabledAsset.id), result.map { it.asset.id })
     }
 }

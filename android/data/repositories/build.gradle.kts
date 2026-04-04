@@ -73,6 +73,7 @@ dependencies {
     api(libs.ktor.json)
 
     implementation(libs.ktx.core)
+    testImplementation(testFixtures(project(":data:services:store")))
     testImplementation(testFixtures(project(":gemcore")))
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

@@ -1,10 +1,37 @@
 package com.gemwallet.android.data.service.store.database.entities
 
+import com.gemwallet.android.ext.toIdentifier
+import com.wallet.core.primitives.Asset
 import com.wallet.core.primitives.AssetType
 import com.wallet.core.primitives.Chain
 import com.wallet.core.primitives.WalletType
 
-internal fun mockDbAssetInfo(
+fun mockDbAssetInfo(
+    asset: Asset,
+    visible: Boolean? = true,
+    isSwapEnabled: Boolean = true,
+    walletId: String? = "wallet-1",
+    sessionId: Int? = 1,
+    walletName: String? = "Wallet",
+    walletType: WalletType? = WalletType.Multicoin,
+    address: String? = "address",
+) = mockDbAssetInfo(
+    chain = asset.id.chain,
+    id = asset.id.toIdentifier(),
+    name = asset.name,
+    symbol = asset.symbol,
+    decimals = asset.decimals,
+    type = asset.type,
+    visible = visible,
+    isSwapEnabled = isSwapEnabled,
+    walletId = walletId,
+    sessionId = sessionId,
+    walletName = walletName,
+    walletType = walletType,
+    address = address,
+)
+
+fun mockDbAssetInfo(
     chain: Chain = Chain.Bitcoin,
     id: String = chain.string,
     name: String = "Asset",

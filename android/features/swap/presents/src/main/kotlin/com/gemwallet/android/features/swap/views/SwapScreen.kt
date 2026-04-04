@@ -1,6 +1,7 @@
 package com.gemwallet.android.features.swap.views
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,7 +19,11 @@ import com.wallet.core.primitives.AssetId
 
 @Composable
 fun SwapScreen(
+    payId: AssetId?,
+    receiveId: AssetId?,
+    select: SwapItemType?,
     viewModel: SwapViewModel = hiltViewModel(),
+    onSelectionConsumed: () -> Unit,
     onSelect: (select: SwapItemType, payAssetId: AssetId?, receiveAssetId: AssetId?) -> Unit,
     onConfirm: (ConfirmParams) -> Unit,
     onCancel: () -> Unit,
@@ -34,6 +39,20 @@ fun SwapScreen(
     var isShowDetails by remember { mutableStateOf(false) }
 
     ObserveStartedState(viewModel::setRefreshEnabled)
+
+    LaunchedEffect(payId, receiveId, select) {
+        select ?: return@LaunchedEffect
+        val assetId = when (select) {
+            SwapItemType.Pay -> payId
+            SwapItemType.Receive -> receiveId
+        } ?: run {
+            onSelectionConsumed()
+            return@LaunchedEffect
+        }
+
+        viewModel.onSelect(select, assetId)
+        onSelectionConsumed()
+    }
 
     val onSwap: () -> Unit = {
         when (swapState) {

@@ -69,19 +69,32 @@ class SwapViewModelTest {
     )
 
     @Test
-    fun `select is consumed after processing`() = runTest(testDispatcher) {
+    fun `onSelect updates pay asset from empty state`() = runTest(testDispatcher) {
+        val savedState = SavedStateHandle()
+
+        val viewModel = createViewModel(savedState)
+        advanceUntilIdle()
+
+        viewModel.onSelect(SwapItemType.Pay, solAsset.id)
+        advanceUntilIdle()
+
+        assertEquals(solAsset.id.toIdentifier(), savedState.get<String?>("from"))
+        assertNull(savedState.get<String?>("to"))
+        assertEquals(solAsset.id, viewModel.payAsset.value?.id())
+    }
+
+    @Test
+    fun `onSelect keeps opposite asset when pair differs`() = runTest(testDispatcher) {
         val savedState = SavedStateHandle(
             mapOf("from" to solAsset.id.toIdentifier(), "to" to usdcAsset.id.toIdentifier())
         )
 
-        createViewModel(savedState)
+        val viewModel = createViewModel(savedState)
         advanceUntilIdle()
 
-        // Simulate returning from SwapSelectScreen with a new receive selection
-        savedState["select"] = SwapItemType.Receive
+        viewModel.onSelect(SwapItemType.Receive, usdcAsset.id)
         advanceUntilIdle()
 
-        assertNull("select must be consumed after processing", savedState.get<SwapItemType?>("select"))
         assertEquals(usdcAsset.id.toIdentifier(), savedState.get<String?>("to"))
         assertEquals(solAsset.id.toIdentifier(), savedState.get<String?>("from"))
     }
@@ -95,27 +108,26 @@ class SwapViewModelTest {
         val viewModel = createViewModel(savedState)
         advanceUntilIdle()
 
-        // Simulate selecting SOL as receive (same as current pay)
-        savedState["to"] = solAsset.id.toIdentifier()
-        savedState["select"] = SwapItemType.Receive
+        viewModel.onSelect(SwapItemType.Receive, solAsset.id)
         advanceUntilIdle()
 
-        assertNull("select must be consumed", savedState.get<SwapItemType?>("select"))
+        assertEquals(solAsset.id.toIdentifier(), savedState.get<String?>("to"))
         assertNull("pay must be cleared when receive matches it", savedState.get<String?>("from"))
     }
 
     @Test
-    fun `assets survive without select being set`() = runTest(testDispatcher) {
+    fun `selecting same pay asset clears receive`() = runTest(testDispatcher) {
         val savedState = SavedStateHandle(
-            mapOf("from" to solAsset.id.toIdentifier(), "to" to usdcAsset.id.toIdentifier())
+            mapOf("from" to usdcAsset.id.toIdentifier(), "to" to solAsset.id.toIdentifier())
         )
 
-        createViewModel(savedState)
+        val viewModel = createViewModel(savedState)
         advanceUntilIdle()
 
-        // No select set — simulates returning from confirm screen after the fix
+        viewModel.onSelect(SwapItemType.Pay, solAsset.id)
+        advanceUntilIdle()
+
         assertEquals(solAsset.id.toIdentifier(), savedState.get<String?>("from"))
-        assertEquals(usdcAsset.id.toIdentifier(), savedState.get<String?>("to"))
-        assertNull(savedState.get<SwapItemType?>("select"))
+        assertNull(savedState.get<String?>("to"))
     }
 }

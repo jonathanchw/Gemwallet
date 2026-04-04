@@ -265,7 +265,11 @@ class AssetsRepository @Inject constructor(
             }
             .toAssetInfoModel()
             .map { assets ->
-                assets.filter { !Chain.exclude().contains(it.asset.id.chain) }
+                assets.filter { asset ->
+                    asset.walletId == wallet.id &&
+                        asset.metadata?.isEnabled == true &&
+                        !Chain.exclude().contains(asset.asset.id.chain)
+                }
                     .distinctBy { it.asset.id.toIdentifier() }
             }
     }
