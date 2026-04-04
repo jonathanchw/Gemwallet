@@ -25,12 +25,12 @@ import com.gemwallet.android.data.service.store.database.entities.toDTO
 import com.gemwallet.android.data.service.store.database.entities.toPriceRecord
 import com.gemwallet.android.data.service.store.database.entities.toRecord
 import com.gemwallet.android.data.service.store.database.entities.toUpdateRecord
+import com.gemwallet.android.domains.asset.calculateAvailabilityChanges
 import com.gemwallet.android.domains.asset.chain
 import com.gemwallet.android.domains.asset.defaultBasic
 import com.gemwallet.android.ext.asset
 import com.gemwallet.android.ext.exclude
 import com.gemwallet.android.ext.getAssociatedAssetIds
-import com.gemwallet.android.ext.isSwapSupport
 import com.gemwallet.android.ext.swapSupport
 import com.gemwallet.android.ext.toIdentifier
 import com.gemwallet.android.model.AssetBalance
@@ -126,19 +126,7 @@ class AssetsRepository @Inject constructor(
             Currency.USD -> FiatRate(Currency.USD.string, 1.0)
             else -> null
         }
-        val record = DbAsset(
-            id = assetIdIdentifier,
-            name = assetFull.asset.name,
-            symbol = assetFull.asset.symbol,
-            decimals = assetFull.asset.decimals,
-            type = assetFull.asset.type,
-            chain = assetFull.asset.chain,
-            isBuyEnabled = assetFull.properties.isBuyable,
-            isSellEnabled = assetFull.properties.isSellable,
-            isStakeEnabled = assetFull.properties.isStakeable,
-            isSwapEnabled = assetFull.asset.chain.isSwapSupport(),
-            stakingApr = assetFull.properties.stakingApr,
-            rank = assetFull.score.rank,
+        val record = assetFull.toRecord().copy(
             updatedAt = System.currentTimeMillis(),
         )
         val linkRecords = assetFull.links.toAssetLinkRecord(assetId)
@@ -418,13 +406,19 @@ class AssetsRepository @Inject constructor(
     }
 
     suspend fun updateBuyAvailable(assets: List<String>) {
-        assetsDao.resetBuyAvailable()
-        assetsDao.updateBuyAvailable(assets)
+        syncAvailability(
+            currentEnabledAssetIds = assetsDao.getBuyAvailableAssetIds(),
+            targetEnabledAssetIds = assets,
+            setAvailability = assetsDao::setBuyAvailable,
+        )
     }
 
     suspend fun updateSellAvailable(assets: List<String>) {
-        assetsDao.resetSellAvailable()
-        assetsDao.updateSellAvailable(assets)
+        syncAvailability(
+            currentEnabledAssetIds = assetsDao.getSellAvailableAssetIds(),
+            targetEnabledAssetIds = assets,
+            setAvailability = assetsDao::setSellAvailable,
+        )
     }
 
     private fun onTransactions(txs: List<TransactionExtended>) = scope.launch {
@@ -464,8 +458,34 @@ class AssetsRepository @Inject constructor(
     }
 
     private suspend fun syncSwapSupportChains() {
-        assetsDao.resetSwapable()
-        assetsDao.setSwapable(Chain.swapSupport())
+        val nativeAssetIds = Chain.entries.map { it.asset().id.toIdentifier() }
+        syncAvailability(
+            currentEnabledAssetIds = assetsDao.getSwapAvailableAssetIds(nativeAssetIds),
+            targetEnabledAssetIds = Chain.swapSupport()
+                .map { it.asset().id.toIdentifier() },
+            trackedAssetIds = nativeAssetIds,
+            setAvailability = assetsDao::setSwapAvailable,
+        )
+    }
+
+    private suspend fun syncAvailability(
+        currentEnabledAssetIds: List<String>,
+        targetEnabledAssetIds: List<String>,
+        setAvailability: suspend (List<String>, Boolean) -> Unit,
+        trackedAssetIds: List<String> = (currentEnabledAssetIds + targetEnabledAssetIds).distinct(),
+    ) {
+        val changes = calculateAvailabilityChanges(
+            currentEnabledAssetIds = currentEnabledAssetIds,
+            targetEnabledAssetIds = targetEnabledAssetIds,
+            trackedAssetIds = trackedAssetIds,
+        )
+
+        if (changes.idsToDisable.isNotEmpty()) {
+            setAvailability(changes.idsToDisable, false)
+        }
+        if (changes.idsToEnable.isNotEmpty()) {
+            setAvailability(changes.idsToEnable, true)
+        }
     }
 
     private suspend fun List<AssetInfo>.updateBalances(): List<Deferred<List<AssetBalance>>> = withContext(Dispatchers.IO) {

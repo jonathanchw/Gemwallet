@@ -18,7 +18,6 @@ import com.gemwallet.android.data.service.store.database.entities.DbAssetMarket
 import com.gemwallet.android.data.service.store.database.entities.DbAssetWallet
 import com.gemwallet.android.data.service.store.database.entities.DbPrice
 import com.gemwallet.android.domains.asset.defaultBasic
-import com.gemwallet.android.testkit.mockAsset
 import com.gemwallet.android.testkit.mockAssetFull
 import com.gemwallet.android.testkit.mockAssetLink
 import com.gemwallet.android.testkit.mockAssetProperties
@@ -85,9 +84,12 @@ class AssetsRepositoryTest {
         every { getChangedTransactions.getChangedTransactions() } returns emptyFlow()
         every { sessionRepository.session() } returns sessionFlow
 
-        val asset = mockAsset()
+        val asset = mockAssetSolana()
         val assetFull = mockAssetFull(
             asset = asset,
+            properties = mockAssetProperties(
+                isSwapable = false,
+            ),
             links = listOf(mockAssetLink()),
             price = mockPrice(
                 price = 100.0,
@@ -109,34 +111,66 @@ class AssetsRepositoryTest {
 
         coEvery { sessionRepository.getCurrentCurrency() } returns Currency.EUR
         every { pricesDao.getRates(Currency.EUR) } returns flowOf(DbFiatRate(Currency.EUR, 0.5))
-        coEvery { pricesDao.getByAssets(listOf("bitcoin")) } returns emptyList()
+        coEvery { pricesDao.getByAssets(listOf("solana")) } returns emptyList()
 
         val subject = createSubject()
         subject.updateAssetMetadata(assetFull)
 
         val linksSlot = slot<List<DbAssetLink>>()
+        val assetSlot = slot<DbAsset>()
         val priceSlot = slot<DbPrice>()
         val marketSlot = slot<DbAssetMarket>()
 
+        coVerify { assetsDao.update(capture(assetSlot)) }
         coVerify { assetsDao.addLinks(capture(linksSlot)) }
         coVerify { pricesDao.insert(capture(priceSlot)) }
         coVerify { assetsDao.setMarket(capture(marketSlot)) }
 
+        assertEquals("solana", assetSlot.captured.id)
+        assertEquals(false, assetSlot.captured.isSwapEnabled)
         assertEquals(1, linksSlot.captured.size)
         assertEquals("website", linksSlot.captured.single().name)
         assertEquals("https://bitcoin.org", linksSlot.captured.single().url)
 
-        assertEquals("bitcoin", priceSlot.captured.assetId)
+        assertEquals("solana", priceSlot.captured.assetId)
         assertEquals(50.0, priceSlot.captured.value ?: 0.0, 0.0)
         assertEquals(100.0, priceSlot.captured.usdValue ?: 0.0, 0.0)
         assertEquals("EUR", priceSlot.captured.currency)
 
-        assertEquals("bitcoin", marketSlot.captured.assetId)
+        assertEquals("solana", marketSlot.captured.assetId)
         assertEquals(500.0, marketSlot.captured.marketCap ?: 0.0, 0.0)
         assertEquals(750.0, marketSlot.captured.marketCapFdv ?: 0.0, 0.0)
         assertEquals(100.0, marketSlot.captured.totalVolume ?: 0.0, 0.0)
         assertEquals(150.0, marketSlot.captured.allTimeHigh ?: 0.0, 0.0)
         assertEquals(25.0, marketSlot.captured.allTimeLow ?: 0.0, 0.0)
+    }
+
+    @Test
+    fun updateBuyAvailable_appliesAvailabilityDiffWithoutResettingAllRows() = runBlocking {
+        every { getChangedTransactions.getChangedTransactions() } returns emptyFlow()
+        every { sessionRepository.session() } returns sessionFlow
+        coEvery { assetsDao.getSwapAvailableAssetIds(any()) } returns emptyList()
+        coEvery { assetsDao.getBuyAvailableAssetIds() } returns listOf("bitcoin", "ethereum")
+
+        val subject = createSubject()
+        subject.updateBuyAvailable(listOf("ethereum", "solana"))
+
+        coVerify { assetsDao.setBuyAvailable(listOf("bitcoin"), false) }
+        coVerify { assetsDao.setBuyAvailable(listOf("solana"), true) }
+    }
+
+    @Test
+    fun updateSellAvailable_appliesAvailabilityDiffWithoutResettingAllRows() = runBlocking {
+        every { getChangedTransactions.getChangedTransactions() } returns emptyFlow()
+        every { sessionRepository.session() } returns sessionFlow
+        coEvery { assetsDao.getSwapAvailableAssetIds(any()) } returns emptyList()
+        coEvery { assetsDao.getSellAvailableAssetIds() } returns listOf("bitcoin", "ethereum")
+
+        val subject = createSubject()
+        subject.updateSellAvailable(listOf("ethereum", "solana"))
+
+        coVerify { assetsDao.setSellAvailable(listOf("bitcoin"), false) }
+        coVerify { assetsDao.setSellAvailable(listOf("solana"), true) }
     }
 
     @Test
