@@ -51,6 +51,15 @@ import com.gemwallet.android.features.recipient.viewmodel.AddressChainViewModel
 import com.wallet.core.primitives.NameRecord
 import com.wallet.core.primitives.WalletType
 
+internal fun supportsPhraseSuggestions(walletType: WalletType): Boolean {
+    return when (walletType) {
+        WalletType.Multicoin,
+        WalletType.Single -> true
+        WalletType.PrivateKey,
+        WalletType.View -> false
+    }
+}
+
 @Composable
 internal fun ImportInput(
     inputState: TextFieldValue,

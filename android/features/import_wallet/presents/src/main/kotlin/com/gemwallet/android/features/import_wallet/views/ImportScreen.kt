@@ -45,6 +45,9 @@ import com.gemwallet.android.blockchain.operators.walletcore.WCFindPhraseWord
 import com.gemwallet.android.cases.wallet.ImportError
 import com.gemwallet.android.features.import_wallet.components.ImportInput
 import com.gemwallet.android.features.import_wallet.components.WalletTypeTab
+import com.gemwallet.android.features.import_wallet.components.importTypeTabIndex
+import com.gemwallet.android.features.import_wallet.components.importWalletTabs
+import com.gemwallet.android.features.import_wallet.components.supportsPhraseSuggestions
 import com.gemwallet.android.features.import_wallet.viewmodels.ImportViewModel
 import com.gemwallet.android.model.ImportType
 import com.gemwallet.android.ui.DisableScreenShooting
@@ -60,6 +63,20 @@ import com.gemwallet.android.ui.theme.sceneContentPadding
 import com.wallet.core.primitives.Chain
 import com.wallet.core.primitives.NameRecord
 import com.wallet.core.primitives.WalletType
+
+internal sealed interface ImportSceneTitle {
+    data class Resource(val resId: Int) : ImportSceneTitle
+    data class Text(val value: String) : ImportSceneTitle
+}
+
+internal fun importSceneTitle(importType: ImportType, chainName: String): ImportSceneTitle {
+    return when (importType.walletType) {
+        WalletType.Multicoin -> ImportSceneTitle.Resource(R.string.wallet_multicoin)
+        WalletType.Single,
+        WalletType.PrivateKey,
+        WalletType.View -> ImportSceneTitle.Text(chainName)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,6 +144,10 @@ private fun ImportScene(
     val inputState = remember {
         mutableStateOf(TextFieldValue())
     }
+    val title = when (val sceneTitle = importSceneTitle(importType, chainName)) {
+        is ImportSceneTitle.Resource -> stringResource(sceneTitle.resId)
+        is ImportSceneTitle.Text -> sceneTitle.value
+    }
     val chainWalletName = stringResource(id = R.string.wallet_default_name_chain, chainName, generatedNameIndex)
     val mainWalletName = stringResource(id = R.string.wallet_default_name, generatedNameIndex)
     val generatedName = remember(key1 = importType.walletType, key2 = generatedNameIndex) {
@@ -140,7 +161,7 @@ private fun ImportScene(
     var dataErrorState by remember(dataError) { mutableStateOf(dataError) }
 
     Scene(
-        title = stringResource(id = R.string.wallet_import_title),
+        title = title,
         onClose = onCancel,
         mainAction = {
             MainActionButton(
@@ -185,7 +206,7 @@ private fun DataInput(
     nameRecordState: MutableState<NameRecord?>,
     onChange: () -> Unit,
 ) {
-    val suggestions = remember { mutableStateListOf<String>() }
+    val suggestions = remember(importType.walletType) { mutableStateListOf<String>() }
 
     ImportInput(
         inputState = inputState.value,
@@ -196,7 +217,7 @@ private fun DataInput(
 
             onChange()
 
-            if (suggestions.isNotEmpty() && importType.walletType != WalletType.View) {
+            if (!supportsPhraseSuggestions(importType.walletType)) {
                 return@ImportInput
             }
 
@@ -226,7 +247,7 @@ private fun DataInput(
             style = MaterialTheme.typography.bodySmall,
         )
     }
-    if (suggestions.isNotEmpty() && importType.walletType != WalletType.View) {
+    if (suggestions.isNotEmpty() && supportsPhraseSuggestions(importType.walletType)) {
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -256,14 +277,14 @@ private fun TypeSelection(
     }
     PrimaryTabRow(
         modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(4.dp)),
-        selectedTabIndex = 0,
+        selectedTabIndex = importTypeTabIndex(importType.walletType),
         indicator = { Box {} },
         containerColor = Color.Transparent,//(0xFFEBEBEB),
         divider = {}
     ) {
-        WalletTypeTab(WalletType.Single, importType.walletType, onTypeChange)
-        WalletTypeTab(WalletType.PrivateKey, importType.walletType, onTypeChange)
-        WalletTypeTab(WalletType.View, importType.walletType, onTypeChange)
+        importWalletTabs.forEach { walletType ->
+            WalletTypeTab(walletType, importType.walletType, onTypeChange)
+        }
     }
     Spacer16()
 }

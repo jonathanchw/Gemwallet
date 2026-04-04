@@ -17,6 +17,16 @@ import com.gemwallet.android.ui.R
 import com.gemwallet.android.ui.theme.alpha10
 import com.wallet.core.primitives.WalletType
 
+internal val importWalletTabs = listOf(
+    WalletType.Single,
+    WalletType.PrivateKey,
+    WalletType.View,
+)
+
+internal fun importTypeTabIndex(walletType: WalletType): Int {
+    return importWalletTabs.indexOf(walletType).takeIf { it >= 0 } ?: 0
+}
+
 @Composable
 internal fun WalletTypeTab(
     type: WalletType,
@@ -36,7 +46,7 @@ internal fun WalletTypeTab(
                     Color.Transparent
                 }
             ),
-        selected = true,
+        selected = isSelected,
         onClick = { onTypeChange(type) },
         text = {
             Text(
