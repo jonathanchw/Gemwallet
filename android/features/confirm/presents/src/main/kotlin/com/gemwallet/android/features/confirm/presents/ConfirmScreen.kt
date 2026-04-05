@@ -239,25 +239,24 @@ fun ConfirmScreen(
             onCancel = { showSelectTxSpeed = false },
         )
 
-        if (showWalletConnectDetails) {
-            ModalBottomSheet(
-                onDismissRequest = { showWalletConnectDetails = false },
-                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                dragHandle = {
-                    DialogBar(
-                        onDismissRequest = { showWalletConnectDetails = false },
-                    )
-                },
-            ) {
-                LazyColumn {
-                    item {
-                        SubheaderItem(R.string.common_details)
-                    }
-                    simulationPayloadDetailsContent(
-                        primaryFields = walletConnectReview.primaryPayloadFields,
-                        secondaryFields = walletConnectReview.secondaryPayloadFields,
-                    )
+        ModalBottomSheet(
+            isVisible = showWalletConnectDetails,
+            onDismissRequest = { showWalletConnectDetails = false },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            dragHandle = {
+                DialogBar(
+                    onDismissRequest = { showWalletConnectDetails = false },
+                )
+            },
+        ) {
+            LazyColumn {
+                item {
+                    SubheaderItem(R.string.common_details)
                 }
+                simulationPayloadDetailsContent(
+                    primaryFields = walletConnectReview.primaryPayloadFields,
+                    secondaryFields = walletConnectReview.secondaryPayloadFields,
+                )
             }
         }
 

@@ -32,11 +32,8 @@ fun ProviderList(
     selectedProvider: BuyFiatProviderUIModel?,
     onProviderSelect: (FiatProvider) -> Unit,
 ) {
-    if (!isShow.value) {
-        return
-    }
-
     ModalBottomSheet(
+        isVisible = isShow.value,
         onDismissRequest = { isShow.value = false },
     ) {
         LazyColumn {
