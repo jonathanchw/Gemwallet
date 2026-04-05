@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,8 +28,10 @@ import com.gemwallet.android.ui.components.clipboard.setPlainText
 import com.gemwallet.android.ui.components.screen.LoadingScene
 import com.gemwallet.android.ui.components.screen.PhraseLayout
 import com.gemwallet.android.ui.components.screen.Scene
+import com.gemwallet.android.ui.theme.adaptivePadding
 import com.gemwallet.android.ui.theme.alpha10
 import com.gemwallet.android.ui.theme.paddingDefault
+import com.gemwallet.android.ui.theme.paddingMiddle
 import com.gemwallet.android.ui.theme.sceneContentPaddingValues
 import com.gemwallet.android.ui.theme.space8
 import com.wallet.core.primitives.WalletType
@@ -82,6 +85,8 @@ fun WalletSecretDataNavScreen(
         backHandle = true,
         onClose = onCancel,
     ) {
+        val warningHorizontalPadding = adaptivePadding(default = paddingDefault, compact = paddingMiddle)
+
         Column(
             modifier = Modifier
             .fillMaxSize()
@@ -91,21 +96,24 @@ fun WalletSecretDataNavScreen(
         ) {
             Column(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .background(
                         color = MaterialTheme.colorScheme.error.copy(alpha = alpha10),
                         shape = MaterialTheme.shapes.small
                     )
-                    .padding(paddingDefault),
+                    .padding(horizontal = warningHorizontalPadding, vertical = paddingDefault),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(space8)
             ) {
                 Text(
+                    modifier = Modifier.fillMaxWidth(),
                     text = stringResource(id = content.warningTitleRes),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                 )
                 Text(
+                    modifier = Modifier.fillMaxWidth(),
                     text = stringResource(id = content.warningDescriptionRes),
                     color = MaterialTheme.colorScheme.error,
                     textAlign = TextAlign.Center,

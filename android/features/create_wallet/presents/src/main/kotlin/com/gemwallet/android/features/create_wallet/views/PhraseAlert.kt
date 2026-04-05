@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -25,11 +24,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.gemwallet.android.ui.R
+import com.gemwallet.android.ui.components.CenteredDescriptionText
 import com.gemwallet.android.ui.components.buttons.MainActionButton
 import com.gemwallet.android.ui.components.screen.Scene
 import com.gemwallet.android.ui.models.actions.CancelAction
@@ -86,14 +85,7 @@ fun PhraseAlertDialog(
                 .padding(sceneContentPadding()),
             verticalArrangement = Arrangement.spacedBy(paddingDefault),
         ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = sceneContentPadding()),
-                text = stringResource(R.string.onboarding_security_create_wallet_intro_title),
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.secondary,
-            )
+            CenteredDescriptionText(stringResource(R.string.onboarding_security_create_wallet_intro_title))
             InfoBlock(
                 Emoji.lock,
                 R.string.onboarding_security_create_wallet_keep_safe_title,

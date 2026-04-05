@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -20,10 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import com.gemwallet.android.features.create_wallet.components.WordChip
 import com.gemwallet.android.ui.DisableScreenShooting
 import com.gemwallet.android.ui.R
+import com.gemwallet.android.ui.components.CenteredDescriptionText
 import com.gemwallet.android.ui.components.buttons.MainActionButton
 import com.gemwallet.android.ui.components.screen.PhraseLayout
 import com.gemwallet.android.ui.components.screen.Scene
@@ -33,7 +31,6 @@ import com.gemwallet.android.ui.theme.Spacer16
 import com.gemwallet.android.ui.theme.WindowDimension
 import com.gemwallet.android.ui.theme.isCompactDimension
 import com.gemwallet.android.ui.theme.paddingDefault
-import com.gemwallet.android.ui.theme.sceneContentPadding
 import com.gemwallet.android.ui.theme.sceneContentPaddingValues
 import kotlin.math.min
 
@@ -103,12 +100,7 @@ internal fun CheckPhrase(
             modifier = Modifier.verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                modifier = Modifier.padding(horizontal = sceneContentPadding()),
-                text = stringResource(id = R.string.secret_phrase_confirm_quick_test_title),
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.secondary,
-            )
+            CenteredDescriptionText(stringResource(R.string.secret_phrase_confirm_quick_test_title))
             Spacer16()
             PhraseLayout(
                 words = render,
