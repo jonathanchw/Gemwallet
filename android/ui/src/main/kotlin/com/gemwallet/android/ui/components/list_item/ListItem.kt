@@ -42,18 +42,19 @@ fun ListItem(
     subtitle: (@Composable () -> Unit)? = null,
     trailing: (@Composable RowScope.() -> Unit)? = null,
 ) {
-    val horizontalPadding = adaptivePadding(default = paddingDefault, compact = paddingSmall)
+    val sidePadding = adaptivePadding(default = paddingDefault, compact = paddingSmall)
+    val contentSpacing = paddingMiddle
 
     Row(
         modifier = Modifier
-            .listItem(position = listPosition, paddingHorizontal = horizontalPadding)
+            .listItem(position = listPosition, paddingHorizontal = sidePadding)
             .then(
                 modifier
                     .fillMaxWidth()
-                    .padding(start = paddingMiddle)
+                    .padding(start = contentSpacing)
             ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(paddingMiddle)
+        horizontalArrangement = Arrangement.spacedBy(contentSpacing)
     ) {
         leading?.invoke(this)
         Row(
@@ -61,7 +62,7 @@ fun ListItem(
                 .heightIn(min = minHeight)
                 .padding(
                     top = contentPadding,
-                    end = contentPadding.coerceAtLeast(paddingMiddle),
+                    end = sidePadding.coerceAtLeast(paddingDefault),
                     bottom = contentPadding,
                 )
                 .fillMaxWidth(),
@@ -81,7 +82,7 @@ fun ListItem(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Spacer(modifier = Modifier.width(paddingMiddle))
+                    Spacer(modifier = Modifier.width(contentSpacing))
                     it.invoke(this)
                 }
             }
