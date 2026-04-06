@@ -42,7 +42,8 @@ extension TransactionSceneViewModel: ListSectionProvideable {
         [
             ListSection(type: .header, [.header]),
             ListSection(type: .swapAction, [.swapButton]),
-            ListSection(type: .details, [.date, .status, .participant, .memo, .network, .pnl, .price, .provider, .fee]),
+            ListSection(type: .details, [.date, .status, .participant, .memo, .network, .pnl, .price, .provider]),
+            ListSection(type: .fee, [.fee]),
             ListSection(type: .explorer, [.explorerLink]),
         ]
     }

@@ -22,6 +22,7 @@ public enum PushNotificationTypes: String, Codable, Equatable, Sendable {
 	case support
 	case rewards
 	case stake
+	case fiatTransaction
 }
 
 public struct PushNotificationPayloadType: Codable, Equatable, Sendable {
@@ -37,16 +38,6 @@ public struct PushNotificationReward: Codable, Equatable, Sendable {
 
 	public init(walletId: String) {
 		self.walletId = walletId
-	}
-}
-
-public struct PushNotificationStake: Codable, Equatable, Sendable {
-	public let walletId: WalletId
-	public let assetId: AssetId
-
-	public init(walletId: WalletId, assetId: AssetId) {
-		self.walletId = walletId
-		self.assetId = assetId
 	}
 }
 
@@ -73,5 +64,15 @@ public struct PushNotificationTransaction: Codable, Equatable, Sendable {
 		self.walletId = walletId
 		self.assetId = assetId
 		self.transaction = transaction
+	}
+}
+
+public struct PushNotificationWalletAsset: Codable, Equatable, Sendable {
+	public let walletId: WalletId
+	public let assetId: AssetId
+
+	public init(walletId: WalletId, assetId: AssetId) {
+		self.walletId = walletId
+		self.assetId = assetId
 	}
 }

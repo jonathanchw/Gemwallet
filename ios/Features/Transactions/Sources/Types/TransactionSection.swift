@@ -10,6 +10,7 @@ public enum TransactionSectionType: String, Identifiable, Equatable {
     case header
     case swapAction
     case details
+    case fee
     case explorer
 
     public var id: String { rawValue }

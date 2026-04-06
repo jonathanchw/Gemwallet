@@ -52,8 +52,10 @@ public enum PushNotification: Equatable, Sendable {
         case .rewards:
             self = .rewards
         case .stake:
-            let value = try decoder.decode(PushNotificationStake.self, from: data)
+            let value = try decoder.decode(PushNotificationWalletAsset.self, from: data)
             self = .stake(value.walletId, value.assetId)
+        case .fiatTransaction:
+            self = .unknown
         case .test:
             self = .test
         }

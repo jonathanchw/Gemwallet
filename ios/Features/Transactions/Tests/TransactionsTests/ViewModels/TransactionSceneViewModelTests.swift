@@ -195,11 +195,12 @@ struct TransactionSceneViewModelTests {
         let model = TransactionSceneViewModel.mock()
         let sections = model.sections
 
-        #expect(sections.count == 4)
+        #expect(sections.count == 5)
         #expect(sections[0].id == "header")
         #expect(sections[1].id == "swapAction")
         #expect(sections[2].id == "details")
-        #expect(sections[3].id == "explorer")
+        #expect(sections[3].id == "fee")
+        #expect(sections[4].id == "explorer")
 
         #expect(sections[0].values == [TransactionItem.header])
         #expect(sections[1].values == [TransactionItem.swapButton])
@@ -212,9 +213,9 @@ struct TransactionSceneViewModelTests {
             TransactionItem.pnl,
             TransactionItem.price,
             TransactionItem.provider,
-            TransactionItem.fee,
         ])
-        #expect(sections[3].values == [TransactionItem.explorerLink])
+        #expect(sections[3].values == [TransactionItem.fee])
+        #expect(sections[4].values == [TransactionItem.explorerLink])
     }
 
     private func verifyNonEmpty(_ model: TransactionItemModel) {
