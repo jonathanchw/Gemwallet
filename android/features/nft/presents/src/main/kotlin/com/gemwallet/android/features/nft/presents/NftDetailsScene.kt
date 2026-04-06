@@ -1,8 +1,10 @@
 package com.gemwallet.android.features.nft.presents
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -21,7 +23,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gemwallet.android.ext.AddressFormatter
 import com.gemwallet.android.ext.linkType
 import com.gemwallet.android.ui.R
-import com.gemwallet.android.ui.components.image.AsyncImage
+import com.gemwallet.android.ui.components.image.NftImage
+import com.gemwallet.android.ui.components.image.toImageSource
 import com.gemwallet.android.ui.components.list_item.SubheaderItem
 import com.gemwallet.android.ui.components.list_item.property.AddressPropertyItem
 import com.gemwallet.android.ui.components.list_item.property.PropertyItem
@@ -32,6 +35,7 @@ import com.gemwallet.android.ui.models.ListPosition
 import com.gemwallet.android.ui.models.actions.CancelAction
 import com.gemwallet.android.ui.theme.compactIconSize
 import com.gemwallet.android.ui.theme.paddingDefault
+import com.gemwallet.android.ui.theme.paddingSmall
 import com.gemwallet.android.ui.theme.sceneContentPadding
 import com.gemwallet.android.features.nft.presents.components.NftTitle
 import com.gemwallet.android.features.nft.viewmodels.NftAssetDetailsUIModel
@@ -75,18 +79,16 @@ fun NFTDetailsScene(
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
-                AsyncImage(
-                    model.imageUrl,
-                    size = null,
-                    transformation = null,
+                NftImage(
+                    source = model.asset.toImageSource(),
                     modifier = Modifier
                         .padding(horizontal = sceneContentPadding())
                         .fillMaxWidth()
                         .aspectRatio(1f)
-                        .clip(RoundedCornerShape(paddingDefault))
-                    ,
+                        .clip(RoundedCornerShape(paddingDefault)),
                 )
             }
+            item { Spacer(Modifier.height(paddingSmall)) }
             generalInfo(model)
             nftAttributes(model.attributes)
             nftLinks(model.collection.links) { uriHandler.openUri(it) }
