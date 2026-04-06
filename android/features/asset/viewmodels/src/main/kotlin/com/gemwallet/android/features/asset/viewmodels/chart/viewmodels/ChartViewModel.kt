@@ -6,15 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.application.assets.coordinators.GetAssetChartData
 import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.data.repositories.session.SessionRepository
-import com.gemwallet.android.domains.percentage.formatAsPercentage
-import com.gemwallet.android.domains.price.toPriceState
 import com.gemwallet.android.ext.toAssetId
 import com.gemwallet.android.features.asset.viewmodels.assetIdArg
-import com.wallet.core.primitives.AssetId
-import com.gemwallet.android.model.AssetPriceInfo
-import com.gemwallet.android.model.format
 import com.gemwallet.android.features.asset.viewmodels.chart.models.ChartUIModel
-import com.gemwallet.android.features.asset.viewmodels.chart.models.PricePoint
+import com.gemwallet.android.features.asset.viewmodels.chart.models.from
+import com.wallet.core.primitives.AssetId
 import com.wallet.core.primitives.ChartPeriod
 import com.wallet.core.primitives.ChartValue
 import com.wallet.core.primitives.Currency
@@ -25,15 +21,15 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -88,7 +84,7 @@ class ChartViewModel @Inject constructor(
 
     val chartUIModel = combine(assetInfo, selectedPeriod, chartPrices, currency.filterNotNull()) { assetInfo, period, prices, currency ->
         val assetInfo = assetInfo ?: return@combine ChartUIModel(period = period)
-        buildChartUIModel(prices, assetInfo.price, period, currency)
+        ChartUIModel.from(prices, assetInfo.price, period, currency)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ChartUIModel())
 
     private suspend fun request(assetId: AssetId, period: ChartPeriod, currency: Currency): List<ChartValue> {
@@ -113,54 +109,4 @@ class ChartViewModel @Inject constructor(
         val loading: Boolean = true,
         val empty: Boolean = false,
     )
-}
-
-internal fun buildChartUIModel(
-    prices: List<ChartValue>,
-    priceInfo: AssetPriceInfo?,
-    period: ChartPeriod,
-    currency: Currency,
-): ChartUIModel {
-    val periodStartPrice = prices.firstOrNull { it.value != 0.0f }?.value ?: prices.firstOrNull()?.value ?: 0.0f
-    val historicalPoints = prices.map {
-        val percent = percentageChange(periodStartPrice, it.value.toDouble())
-        PricePoint(
-            y = it.value,
-            yLabel = currency.format(it.value, 2, dynamicPlace = true),
-            timestamp = it.timestamp * 1000L,
-            percentage = percent.formatAsPercentage(),
-            priceState = percent.toPriceState(),
-        )
-    }
-    val lastTimestampMillis = (prices.lastOrNull()?.timestamp ?: 0) * 1000L
-    val currentPoint = priceInfo
-        ?.takeIf { historicalPoints.isNotEmpty() && it.price.updatedAt > lastTimestampMillis }
-        ?.let {
-            val percentage = if (period == ChartPeriod.Day) {
-                it.price.priceChangePercentage24h
-            } else {
-                percentageChange(periodStartPrice, it.price.price)
-            }
-            PricePoint(
-                y = it.price.price.toFloat(),
-                yLabel = currency.format(it.price.price, dynamicPlace = true),
-                timestamp = System.currentTimeMillis(),
-                percentage = percentage.formatAsPercentage(),
-                priceState = percentage.toPriceState(),
-            )
-        }
-    val chartPoints = historicalPoints + listOfNotNull(currentPoint)
-
-    return ChartUIModel(
-        period = period,
-        currentPoint = currentPoint,
-        chartPoints = chartPoints,
-    )
-}
-
-private fun percentageChange(periodStartPrice: Float, currentPrice: Double): Double {
-    if (periodStartPrice == 0.0f) {
-        return 0.0
-    }
-    return (currentPrice - periodStartPrice) / periodStartPrice * 100.0
 }
