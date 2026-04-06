@@ -92,6 +92,23 @@ fun PropertyItem(
 
 @Composable
 fun PropertyItem(
+    @StringRes title: Int,
+    @StringRes data: Int,
+    info: InfoSheetEntity? = null,
+    dataColor: Color = MaterialTheme.colorScheme.secondary,
+    listPosition: ListPosition = ListPosition.Middle,
+) {
+    PropertyItem(
+        title = stringResource(title),
+        data = stringResource(data),
+        dataColor = dataColor,
+        info = info,
+        listPosition = listPosition,
+    )
+}
+
+@Composable
+fun PropertyItem(
     title: String,
     data: String? = null,
     dataColor: Color = MaterialTheme.colorScheme.secondary,
