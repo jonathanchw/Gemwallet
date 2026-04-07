@@ -68,8 +68,8 @@ fun AssetsScreen(
     viewModel: AssetsViewModel = hiltViewModel(),
 ) {
     val importing by viewModel.importInProgress.collectAsStateWithLifecycle()
-    val pinnedAssets by viewModel.pinnedAssets.collectAsStateWithLifecycle()
-    val unpinnedAssets by viewModel.unpinnedAssets.collectAsStateWithLifecycle()
+    val pinnedAssets by viewModel.pinnedAssets.collectAsStateWithLifecycle(initialValue = emptyList())
+    val unpinnedAssets by viewModel.unpinnedAssets.collectAsStateWithLifecycle(initialValue = emptyList())
 //    val walletInfo by viewModel.walletInfo.collectAsStateWithLifecycle()
     val walletSummary by viewModel.walletSummary.collectAsStateWithLifecycle()
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()

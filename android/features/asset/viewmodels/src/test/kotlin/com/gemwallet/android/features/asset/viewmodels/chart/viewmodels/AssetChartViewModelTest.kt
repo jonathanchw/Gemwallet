@@ -1,9 +1,12 @@
 package com.gemwallet.android.features.asset.viewmodels.chart.viewmodels
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.application.pricealerts.coordinators.GetPriceAlerts
 import com.gemwallet.android.cases.nodes.GetCurrentBlockExplorer
 import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.domains.pricealerts.aggregates.PriceAlertDataAggregate
 import com.gemwallet.android.testkit.mockAssetInfo
 import com.gemwallet.android.testkit.mockAssetLink
 import com.gemwallet.android.testkit.mockAssetMarket
@@ -16,6 +19,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -34,6 +38,7 @@ class AssetChartViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val asset = mockAssetSolanaUSDC()
+    private val viewModels = mutableListOf<ViewModel>()
     private val assetInfoFlow = MutableStateFlow<AssetInfo?>(mockAssetInfo(asset = asset))
     private val linksFlow = MutableStateFlow<List<AssetLink>>(emptyList())
     private val marketFlow = MutableStateFlow<AssetMarket?>(null)
@@ -47,9 +52,7 @@ class AssetChartViewModelTest {
     private val getCurrentBlockExplorer = mockk<GetCurrentBlockExplorer>(relaxed = true) {
         every { getCurrentBlockExplorer(asset.id.chain) } returns "Solscan"
     }
-    private val getPriceAlerts = mockk<GetPriceAlerts>(relaxed = true) {
-        every { getPriceAlerts(asset.id) } returns MutableStateFlow(emptyList())
-    }
+    private val getPriceAlerts = mockk<GetPriceAlerts>(relaxed = true)
     private val sessionRepository = mockk<SessionRepository>(relaxed = true) {
         every { getCurrency() } returns currencyFlow
     }
@@ -57,10 +60,13 @@ class AssetChartViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { getPriceAlerts(asset.id) } returns MutableStateFlow<List<PriceAlertDataAggregate>>(emptyList())
     }
 
     @After
     fun tearDown() {
+        viewModels.forEach { it.viewModelScope.cancel() }
+        viewModels.clear()
         Dispatchers.resetMain()
     }
 
@@ -72,7 +78,7 @@ class AssetChartViewModelTest {
             getPriceAlerts = getPriceAlerts,
             sessionRepository = sessionRepository,
             assetId = asset.id,
-        )
+        ).also(viewModels::add)
         val uiModel = viewModel.marketUIModel.first { it != null }!!
 
         assertEquals(asset, uiModel.asset)
@@ -91,7 +97,7 @@ class AssetChartViewModelTest {
             getPriceAlerts = getPriceAlerts,
             sessionRepository = sessionRepository,
             assetId = asset.id,
-        )
+        ).also(viewModels::add)
         advanceUntilIdle()
 
         val market = mockAssetMarket(marketCap = 1234.0)

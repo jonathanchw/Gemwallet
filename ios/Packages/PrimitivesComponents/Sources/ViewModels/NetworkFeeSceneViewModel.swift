@@ -60,16 +60,13 @@ public final class NetworkFeeSceneViewModel {
     }
 
     public func valueForRate(_ rate: FeeRateViewModel) -> String {
-        switch chain.feeUnitType {
-        case .native: fiatText(for: rate.feeRate) ?? ""
-        case .gwei, .satVb: rate.valueText
-        }
+        rate.valueText
     }
 
     public func fiatValueForRate(_ rate: FeeRateViewModel) -> String? {
         switch chain.feeUnitType {
-        case .native: nil
-        case .gwei, .satVb: fiatText(for: rate.feeRate)
+        case .native: display(for: rate.feeRate.gasPriceType.totalFee).fiat?.text
+        case .gwei, .satVb: nil
         }
     }
 
