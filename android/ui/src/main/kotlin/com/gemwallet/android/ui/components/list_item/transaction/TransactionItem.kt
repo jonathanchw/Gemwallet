@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gemwallet.android.domains.transaction.aggregates.TransactionDataAggregate
 import com.gemwallet.android.domains.asset.getIconUrl
+import com.gemwallet.android.ui.components.showsStatusProgress
 import com.gemwallet.android.ui.components.image.AssetIcon
 import com.gemwallet.android.ui.components.image.BadgeCircle
 import com.gemwallet.android.ui.components.image.IconWithBadge
@@ -143,7 +144,7 @@ private fun TransactionStatusBadge(data: TransactionDataAggregate) {
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.labelMedium,
         )
-        if (data.isPending) {
+        if (data.state.showsStatusProgress()) {
             CircularProgressIndicator10(color = color)
             Spacer8()
         }
