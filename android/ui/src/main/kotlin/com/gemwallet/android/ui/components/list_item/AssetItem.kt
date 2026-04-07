@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,15 +56,21 @@ fun AssetListItem(
         contentPadding = assetListItemContentPadding(),
         leading = @Composable { AssetIcon(asset.asset) },
         title = @Composable { ListItemTitleText(asset.title) },
-        subtitle = asset.price?.let {
-            {
+        subtitle = {
+            asset.price?.let {
                 PriceInfo(
                     it.valueFormatted,
                     it.changePercentageFormatted,
                     it.state,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-            }
+            } ?: PriceInfo(
+                price = " ",
+                changes = " ",
+                state = PriceState.None,
+                modifier = Modifier.alpha(0f),
+                style = MaterialTheme.typography.bodyMedium,
+            )
         },
         trailing = { getBalanceInfo(asset.balance, asset.balanceEquivalent, asset.isZeroBalance).invoke() },
     )
