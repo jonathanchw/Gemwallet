@@ -93,23 +93,15 @@ struct NetworkFeeSceneViewModelTests {
             FeeRate(priority: .fast, gasPriceType: .eip1559(gasPrice: 4, priorityFee: 0)),
         ]
         model.update(rates: rates, feeAssetPrice: nil)
-        model.update(feeAmount: BigInt(1_000))
+        model.update(feeAmount: BigInt(1000))
 
         #expect(model.feeAmount(for: rates[0]) == BigInt(500))
-        #expect(model.feeAmount(for: rates[1]) == BigInt(1_000))
-        #expect(model.feeAmount(for: rates[2]) == BigInt(2_000))
+        #expect(model.feeAmount(for: rates[1]) == BigInt(1000))
+        #expect(model.feeAmount(for: rates[2]) == BigInt(2000))
     }
 
     @Test
-    func feeAmountFallsBackToTotalFeeWhenNotLoaded() {
-        let model = NetworkFeeSceneViewModel(chain: .solana, priority: .normal, currency: .usd)
-        let rate = FeeRate(priority: .normal, gasPriceType: .regular(gasPrice: 5_000))
-
-        #expect(model.feeAmount(for: rate) == BigInt(5_000))
-    }
-
-    @Test
-    func feeAmountReturnsNilForNonNativeWithoutLoadedFee() {
+    func feeAmountReturnsNilWithoutLoadedFee() {
         let model = NetworkFeeSceneViewModel(chain: .ethereum, priority: .normal, currency: .usd)
         let rate = FeeRate(priority: .normal, gasPriceType: .eip1559(gasPrice: 1, priorityFee: 0))
 

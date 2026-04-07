@@ -78,15 +78,10 @@ public final class NetworkFeeSceneViewModel {
     }
 
     func feeAmount(for rate: FeeRate) -> BigInt? {
-        if let feeAmount, let selectedRate = rates.first(where: { $0.priority == priority }) {
-            let selectedTotal = selectedRate.gasPriceType.totalFee
-            guard selectedTotal != .zero else { return nil }
-            return feeAmount * rate.gasPriceType.totalFee / selectedTotal
-        }
-        switch chain.feeUnitType {
-        case .native: return rate.gasPriceType.totalFee
-        case .gwei, .satVb: return nil
-        }
+        guard let feeAmount, let selectedRate = rates.first(where: { $0.priority == priority }) else { return nil }
+        let selectedTotal = selectedRate.gasPriceType.totalFee
+        guard selectedTotal != .zero else { return nil }
+        return feeAmount * rate.gasPriceType.totalFee / selectedTotal
     }
 }
 
