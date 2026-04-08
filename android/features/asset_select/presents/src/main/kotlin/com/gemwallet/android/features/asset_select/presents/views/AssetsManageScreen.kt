@@ -104,7 +104,7 @@ fun AssetsManageScreen(
         itemTrailing = { asset ->
             if (manageable) {
                 Switch(
-                    checked = asset.metadata?.isEnabled == true,
+                    checked = asset.metadata?.isBalanceEnabled == true,
                     onCheckedChange = { viewModel.onChangeVisibility(asset.asset.id, it) }
                 )
             } else {
