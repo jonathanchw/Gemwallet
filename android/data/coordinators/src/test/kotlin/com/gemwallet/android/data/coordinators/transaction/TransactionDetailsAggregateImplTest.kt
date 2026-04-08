@@ -15,6 +15,7 @@ import com.wallet.core.primitives.Price
 import com.wallet.core.primitives.TransactionNFTTransferMetadata
 import com.wallet.core.primitives.SwapProvider
 import com.wallet.core.primitives.TransactionDirection
+import com.wallet.core.primitives.TransactionId
 import com.wallet.core.primitives.TransactionState
 import com.wallet.core.primitives.TransactionSwapMetadata
 import com.wallet.core.primitives.TransactionType
@@ -62,7 +63,7 @@ class TransactionDetailsAggregateImplTest {
         metadata: String? = null,
         memo: String? = null,
     ) = Transaction(
-        id = id,
+        id = TransactionId(assetId.chain, id),
         assetId = assetId,
         from = from,
         to = to,
@@ -126,7 +127,7 @@ class TransactionDetailsAggregateImplTest {
         val extended = createTransactionExtended(transaction, asset = btcAsset)
         val aggregate = createAggregate(extended)
 
-        Assert.assertEquals("test-id-123", aggregate.id)
+        Assert.assertEquals("bitcoin_test-id-123", aggregate.id)
         Assert.assertEquals(btcAsset, aggregate.asset)
         Assert.assertEquals(Currency.USD, aggregate.currency)
         Assert.assertEquals("Explorer", aggregate.explorer.name)

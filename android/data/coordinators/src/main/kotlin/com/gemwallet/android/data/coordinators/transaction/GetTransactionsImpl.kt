@@ -68,7 +68,7 @@ class TransactionDataAggregateImpl(
     private val data: TransactionExtended
 ) : TransactionDataAggregate {
 
-    override val id: String = data.transaction.id
+    override val id: String = data.transaction.id.identifier
 
     override val asset: Asset = data.asset
 

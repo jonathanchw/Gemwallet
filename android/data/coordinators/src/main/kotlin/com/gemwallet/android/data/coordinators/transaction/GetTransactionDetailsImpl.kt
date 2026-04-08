@@ -92,7 +92,7 @@ class TransactionDetailsAggregateImpl(
     private val recipientExplorerLink: BlockExplorerLink? = null,
 ) : TransactionDetailsAggregate {
 
-    override val id: String = data.transaction.id
+    override val id: String = data.transaction.id.identifier
 
     override val asset: Asset = data.asset
     override val type: TransactionType = data.transaction.type
