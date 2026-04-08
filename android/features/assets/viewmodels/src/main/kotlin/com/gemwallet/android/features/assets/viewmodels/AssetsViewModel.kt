@@ -93,8 +93,7 @@ class AssetsViewModel @Inject constructor(
 
     private val isWalletEmpty = assetGroups
         .map { groups ->
-            (groups.pinned.isNotEmpty() || groups.unpinned.isNotEmpty())
-                && groups.pinned.all { it.isZeroBalance }
+            groups.pinned.all { it.isZeroBalance }
                 && groups.unpinned.all { it.isZeroBalance }
         }
         .distinctUntilChanged()
@@ -102,9 +101,11 @@ class AssetsViewModel @Inject constructor(
 
     val pinnedAssets = assetGroups
         .map { it.pinned }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val unpinnedAssets = assetGroups
         .map { it.unpinned }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val walletSummary = getWalletSummary.getWalletSummary()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
