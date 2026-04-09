@@ -6,11 +6,11 @@ import com.gemwallet.android.cases.banners.HasMultiSign
 import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.data.repositories.config.UserConfig
 import com.gemwallet.android.data.repositories.session.SessionRepository
+import com.gemwallet.android.domains.asset.getIconUrl
 import com.gemwallet.android.domains.percentage.PercentageFormatterStyle
 import com.gemwallet.android.domains.percentage.formatAsPercentage
 import com.gemwallet.android.domains.price.values.EquivalentValue
 import com.gemwallet.android.domains.wallet.aggregates.WalletSummaryAggregate
-import com.gemwallet.android.ext.asset
 import com.gemwallet.android.ext.isSwapSupport
 import com.gemwallet.android.model.format
 import com.wallet.core.primitives.Wallet
@@ -136,7 +136,7 @@ internal class WalletSummaryAggregateImpl(
         WalletType.Multicoin -> null
         WalletType.Single,
         WalletType.PrivateKey,
-        WalletType.View -> walletAccount?.chain?.asset()
+        WalletType.View -> walletAccount?.chain?.getIconUrl()
     }
 
     override val walletTotalValue: String = displayState.totalValue
