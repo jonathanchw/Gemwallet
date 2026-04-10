@@ -8,6 +8,7 @@ import com.gemwallet.android.application.asset_select.coordinators.SwitchAssetVi
 import com.gemwallet.android.application.asset_select.coordinators.ToggleAssetPin
 import com.gemwallet.android.application.session.coordinators.GetSession
 import com.gemwallet.android.cases.swap.GetSwapSupported
+import com.gemwallet.android.model.hasAvailable
 import com.gemwallet.android.cases.tokens.SearchTokensCase
 import com.gemwallet.android.data.repositories.assets.AssetsRepository
 import com.gemwallet.android.ext.isSwapSupport
@@ -146,7 +147,7 @@ class SwapSelectSearch(
             items.filter { assetInfo ->
                 assetInfo.metadata?.isSwapEnabled == true
                     && if (swapItemType.value == SwapItemType.Pay) {
-                        assetInfo.balance.totalAmount > 0.0
+                        assetInfo.balance.balance.hasAvailable()
                     } else {
                         true
                     }
