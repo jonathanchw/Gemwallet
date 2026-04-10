@@ -14,7 +14,7 @@ public extension NetworkFeeSceneViewModel {
         feeAmount: BigInt? = nil,
     ) -> NetworkFeeSceneViewModel {
         let feeAsset = feeAsset ?? defaultFeeAsset(for: chain)
-        NetworkFeeSceneViewModel(
+        return NetworkFeeSceneViewModel(
             chain: chain,
             feeAsset: feeAsset,
             priority: priority,
