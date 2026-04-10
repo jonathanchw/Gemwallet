@@ -74,6 +74,9 @@ interface AssetsDao {
     @Query("SELECT * FROM asset WHERE id = :id")
     fun getAsset(id: String): Flow<DbAsset?>
 
+    @Query("SELECT id FROM asset WHERE id IN (:ids)")
+    suspend fun getAssetIds(ids: List<String>): List<String>
+
     @Query("SELECT * FROM asset_info WHERE chain = :chain AND id = :assetId AND sessionId = 1")
     fun getAssetInfo(assetId: String, chain: Chain): Flow<DbAssetInfo?>
 

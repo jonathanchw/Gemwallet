@@ -25,7 +25,7 @@ class SyncTransactionsImpl(
             gemDeviceApiClient.getTransactions(wallet.id, preferences.transactionsTimestamp)?.transactions
         }.getOrNull() ?: return
 
-        prefetchAssets(wallet, transactions)
+        prefetchAssets(transactions)
         saveTransactions.saveTransactions(walletId = wallet.id, transactions)
         preferences.transactionsTimestamp = currentTimestamp()
     }
@@ -38,18 +38,18 @@ class SyncTransactionsImpl(
             gemDeviceApiClient.getTransactions(wallet.id, assetId, timestamp)?.transactions
         }.getOrNull() ?: return
 
-        prefetchAssets(wallet, transactions)
+        prefetchAssets(transactions)
         saveTransactions.saveTransactions(walletId = wallet.id, transactions)
         preferences.setTransactionsForAssetTimestamp(assetId, currentTimestamp())
     }
 
     private fun currentTimestamp(): Long = System.currentTimeMillis() / 1000
 
-    private suspend fun prefetchAssets(wallet: Wallet, transactions: List<Transaction>) {
+    private suspend fun prefetchAssets(transactions: List<Transaction>) {
         val assetIds = transactions
             .flatMap { it.getAssociatedAssetIds() }
             .distinct()
 
-        assetsCoordinator.prefetchAssets(wallet, assetIds)
+        assetsCoordinator.prefetchAssets(assetIds)
     }
 }

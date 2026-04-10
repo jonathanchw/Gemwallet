@@ -32,6 +32,7 @@ import com.gemwallet.android.ext.asset
 import com.gemwallet.android.ext.available
 import com.gemwallet.android.ext.getAssociatedAssetIds
 import com.gemwallet.android.ext.swapSupport
+import com.gemwallet.android.ext.toAssetId
 import com.gemwallet.android.ext.toIdentifier
 import com.gemwallet.android.model.AssetBalance
 import com.gemwallet.android.model.AssetInfo
@@ -172,6 +173,12 @@ class AssetsRepository @Inject constructor(
 
     override suspend fun getAsset(assetId: AssetId): Asset? = withContext(Dispatchers.IO) {
         getAssetInfo(assetId).firstOrNull()?.asset
+    }
+
+    suspend fun hasAssets(assetIds: List<AssetId>): Set<AssetId> = withContext(Dispatchers.IO) {
+        assetsDao.getAssetIds(assetIds.map { it.toIdentifier() })
+            .mapNotNull { it.toAssetId() }
+            .toSet()
     }
 
     suspend fun hasAsset(walletId: String, assetId: AssetId): Boolean = withContext(Dispatchers.IO) {
@@ -348,6 +355,13 @@ class AssetsRepository @Inject constructor(
         if (visible) {
             streamSubscriptionService.addAssetIds(listOf(asset.asset.id))
         }
+    }
+
+    suspend fun add(assets: List<AssetBasic>) = withContext(Dispatchers.IO) {
+        if (assets.isEmpty()) {
+            return@withContext
+        }
+        runCatching { assetsDao.insert(assets.map { it.toRecord() }) }
     }
 
     suspend fun linkAssetToWallet(
