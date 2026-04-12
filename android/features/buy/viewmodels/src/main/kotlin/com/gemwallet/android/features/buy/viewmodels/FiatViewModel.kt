@@ -159,7 +159,7 @@ class FiatViewModel @Inject constructor(
             }
             try {
                 val quotes = getBuyQuotes(
-                    walletId = assetInfo.assetInfo.walletId ?: return@mapLatest,
+                    walletId = assetInfo.assetInfo.walletIdOrNull() ?: return@mapLatest,
                     asset = assetInfo.asset,
                     type = currentType,
                     fiatCurrency = currency.string,
@@ -231,7 +231,7 @@ class FiatViewModel @Inject constructor(
             addRecent()
             val url = getBuyQuoteUrl(
                 quoteId = currentSelectedQuote.value?.id ?: return@launch,
-                walletId = assetInfoUIModel.value?.assetInfo?.walletId ?: return@launch,
+                walletId = assetInfoUIModel.value?.assetInfo?.walletIdOrNull() ?: return@launch,
             )
             callback(url)
         }

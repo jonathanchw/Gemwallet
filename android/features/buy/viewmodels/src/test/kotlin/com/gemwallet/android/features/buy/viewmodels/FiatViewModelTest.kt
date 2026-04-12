@@ -1,6 +1,7 @@
 package com.gemwallet.android.features.buy.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.gemwallet.android.application.fiat.coordinators.AddBuyRecent
 import com.gemwallet.android.application.fiat.coordinators.GetBuyAssetInfo
 import com.gemwallet.android.application.fiat.coordinators.GetBuyQuoteUrl
@@ -17,15 +18,17 @@ import com.wallet.core.primitives.AssetId
 import com.wallet.core.primitives.Currency
 import com.wallet.core.primitives.FiatQuote
 import com.wallet.core.primitives.FiatQuoteType
+import com.wallet.core.primitives.WalletId
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -39,6 +42,7 @@ class FiatViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val asset = mockAsset()
     private val wallet = mockWallet(id = "wallet-id")
+    private val walletId = WalletId(wallet.id)
     private val assetInfoFlow = MutableStateFlow<AssetInfo?>(assetInfo(price = 100.0))
 
     private val getBuyAssetInfo = object : GetBuyAssetInfo {
@@ -47,7 +51,7 @@ class FiatViewModelTest {
     private val getBuyQuotes = mockk<GetBuyQuotes>(relaxed = true) {
         coEvery {
             invoke(
-                walletId = wallet.id,
+                walletId = walletId,
                 asset = asset,
                 type = any(),
                 fiatCurrency = Currency.USD.string,
@@ -70,21 +74,25 @@ class FiatViewModelTest {
 
     @Test
     fun `buy quote is not refetched when only price changes`() = runTest(testDispatcher) {
-        createViewModel()
+        val viewModel = createViewModel()
 
-        advanceUntilIdle()
+        try {
+            runCurrent()
 
-        assetInfoFlow.value = assetInfo(price = 125.0)
-        advanceUntilIdle()
+            assetInfoFlow.value = assetInfo(price = 125.0)
+            runCurrent()
 
-        coVerify(exactly = 1) {
-            getBuyQuotes(
-                walletId = wallet.id,
-                asset = asset,
-                type = FiatQuoteType.Buy,
-                fiatCurrency = Currency.USD.string,
-                amount = 50.0,
-            )
+            coVerify(exactly = 1) {
+                getBuyQuotes(
+                    walletId = walletId,
+                    asset = asset,
+                    type = FiatQuoteType.Buy,
+                    fiatCurrency = Currency.USD.string,
+                    amount = 50.0,
+                )
+            }
+        } finally {
+            viewModel.viewModelScope.cancel()
         }
     }
 
@@ -92,20 +100,25 @@ class FiatViewModelTest {
     fun `buy quote loads when asset info becomes available after init`() = runTest(testDispatcher) {
         assetInfoFlow.value = null
 
-        createViewModel()
-        advanceUntilIdle()
+        val viewModel = createViewModel()
 
-        assetInfoFlow.value = assetInfo(price = 100.0)
-        advanceUntilIdle()
+        try {
+            runCurrent()
 
-        coVerify(exactly = 1) {
-            getBuyQuotes(
-                walletId = wallet.id,
-                asset = asset,
-                type = FiatQuoteType.Buy,
-                fiatCurrency = Currency.USD.string,
-                amount = 50.0,
-            )
+            assetInfoFlow.value = assetInfo(price = 100.0)
+            runCurrent()
+
+            coVerify(exactly = 1) {
+                getBuyQuotes(
+                    walletId = walletId,
+                    asset = asset,
+                    type = FiatQuoteType.Buy,
+                    fiatCurrency = Currency.USD.string,
+                    amount = 50.0,
+                )
+            }
+        } finally {
+            viewModel.viewModelScope.cancel()
         }
     }
 

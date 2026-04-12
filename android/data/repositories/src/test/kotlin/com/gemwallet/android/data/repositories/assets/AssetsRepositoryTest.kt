@@ -17,6 +17,8 @@ import com.gemwallet.android.data.service.store.database.entities.DbAssetLink
 import com.gemwallet.android.data.service.store.database.entities.DbAssetMarket
 import com.gemwallet.android.data.service.store.database.entities.DbAssetWallet
 import com.gemwallet.android.data.service.store.database.entities.DbPrice
+import com.gemwallet.android.data.service.store.database.entities.mockDbAsset
+import com.gemwallet.android.data.service.store.database.entities.mockDbAssetWallet
 import com.gemwallet.android.data.service.store.database.entities.mockDbAssetInfo
 import com.gemwallet.android.domains.asset.defaultBasic
 import com.gemwallet.android.ext.asset
@@ -222,8 +224,7 @@ class AssetsRepositoryTest {
 
         assertEquals(321, assetSlot.captured.rank)
         assertEquals(false, assetSlot.captured.isSwapEnabled)
-        assertEquals("solana", linkSlot.captured.assetId)
-        assertEquals("wallet-address", linkSlot.captured.accountAddress)
+        assertEquals(mockDbAssetWallet(assetId = asset.id, accountAddress = "wallet-address"), linkSlot.captured)
         assertEquals(true, configSlot.captured.isVisible)
         assertEquals(321, updateSlot.captured.rank)
         assertEquals(false, updateSlot.captured.isSwapEnabled)
@@ -361,5 +362,24 @@ class AssetsRepositoryTest {
         val result = subject.getAssetsInfo().first()
 
         assertEquals(listOf(asset.id), result.map { it.asset.id })
+    }
+
+    @Test
+    fun getNativeAssets_returnsNativeWalletAssetsFromDao() = runBlocking {
+        every { getChangedTransactions.getChangedTransactions() } returns emptyFlow()
+        every { sessionRepository.session() } returns sessionFlow
+
+        val wallet = mockWallet(id = "wallet-1")
+        val nativeAsset = mockAssetSolana()
+        every { assetsDao.getNativeWalletAssets(wallet.id) } returns flowOf(
+            listOf(
+                mockDbAsset(asset = nativeAsset),
+            )
+        )
+
+        val subject = createSubject()
+        val result = subject.getNativeAssets(wallet)
+
+        assertEquals(listOf(nativeAsset.id), result.map { it.id })
     }
 }

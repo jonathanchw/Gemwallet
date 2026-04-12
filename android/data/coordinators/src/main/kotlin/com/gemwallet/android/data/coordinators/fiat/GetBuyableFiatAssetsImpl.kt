@@ -7,7 +7,7 @@ import com.wallet.core.primitives.FiatAssets
 class GetBuyableFiatAssetsImpl(
     private val gemDeviceApiClient: GemDeviceApiClient,
 ) : GetBuyableFiatAssets {
-    override suspend fun getBuyableFiatAssets(): FiatAssets {
+    override suspend fun invoke(): FiatAssets {
         return gemDeviceApiClient.getBuyableFiatAssets()
     }
 }
