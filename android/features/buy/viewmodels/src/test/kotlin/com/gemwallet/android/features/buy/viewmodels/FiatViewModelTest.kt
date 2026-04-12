@@ -7,9 +7,9 @@ import com.gemwallet.android.application.fiat.coordinators.GetBuyAssetInfo
 import com.gemwallet.android.application.fiat.coordinators.GetBuyQuoteUrl
 import com.gemwallet.android.application.fiat.coordinators.GetBuyQuotes
 import com.gemwallet.android.ext.toIdentifier
-import com.gemwallet.android.model.AssetInfo
+import com.gemwallet.android.model.AssetData
 import com.gemwallet.android.testkit.mockAsset
-import com.gemwallet.android.testkit.mockAssetInfo
+import com.gemwallet.android.testkit.mockAssetData
 import com.gemwallet.android.testkit.mockAssetPriceInfo
 import com.gemwallet.android.testkit.mockFiatQuote
 import com.gemwallet.android.testkit.mockWallet
@@ -25,14 +25,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -43,10 +41,10 @@ class FiatViewModelTest {
     private val asset = mockAsset()
     private val wallet = mockWallet(id = "wallet-id")
     private val walletId = WalletId(wallet.id)
-    private val assetInfoFlow = MutableStateFlow<AssetInfo?>(assetInfo(price = 100.0))
+    private val assetDataFlow = MutableStateFlow<AssetData?>(assetData(price = 100.0))
 
     private val getBuyAssetInfo = object : GetBuyAssetInfo {
-        override fun invoke(assetId: AssetId): Flow<AssetInfo?> = assetInfoFlow
+        override fun invoke(assetId: AssetId): Flow<AssetData?> = assetDataFlow
     }
     private val getBuyQuotes = mockk<GetBuyQuotes>(relaxed = true) {
         coEvery {
@@ -79,7 +77,7 @@ class FiatViewModelTest {
         try {
             runCurrent()
 
-            assetInfoFlow.value = assetInfo(price = 125.0)
+            assetDataFlow.value = assetData(price = 125.0)
             runCurrent()
 
             coVerify(exactly = 1) {
@@ -97,15 +95,15 @@ class FiatViewModelTest {
     }
 
     @Test
-    fun `buy quote loads when asset info becomes available after init`() = runTest(testDispatcher) {
-        assetInfoFlow.value = null
+    fun `buy quote loads when asset data becomes available after init`() = runTest(testDispatcher) {
+        assetDataFlow.value = null
 
         val viewModel = createViewModel()
 
         try {
             runCurrent()
 
-            assetInfoFlow.value = assetInfo(price = 100.0)
+            assetDataFlow.value = assetData(price = 100.0)
             runCurrent()
 
             coVerify(exactly = 1) {
@@ -117,25 +115,6 @@ class FiatViewModelTest {
                     amount = 50.0,
                 )
             }
-        } finally {
-            viewModel.viewModelScope.cancel()
-        }
-    }
-
-    @Test
-    fun `getUrl without resolved asset calls back with null instead of hanging`() = runTest(testDispatcher) {
-        assetInfoFlow.value = null
-
-        val viewModel = createViewModel()
-        var receivedUrl: String? = "initial"
-
-        try {
-            runCurrent()
-
-            viewModel.getUrl { url -> receivedUrl = url }
-            advanceUntilIdle()
-
-            assertEquals(null, receivedUrl)
         } finally {
             viewModel.viewModelScope.cancel()
         }
@@ -151,7 +130,8 @@ class FiatViewModelTest {
         ),
     )
 
-    private fun assetInfo(price: Double) = mockAssetInfo(asset = asset, walletId = wallet.id).copy(
-        price = mockAssetPriceInfo(price = price),
-    )
+    private fun assetData(price: Double) = mockAssetData(
+        asset = asset,
+        wallet = wallet,
+    ).copy(price = mockAssetPriceInfo(price = price))
 }

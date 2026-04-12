@@ -3,6 +3,7 @@ package com.gemwallet.android.model
 import com.wallet.core.primitives.Account
 import com.wallet.core.primitives.Asset
 import com.wallet.core.primitives.AssetMetaData
+import com.wallet.core.primitives.Wallet
 import com.wallet.core.primitives.WalletId
 
 // TODO: Move to TypeShare once Balance is typeshared in core.
@@ -23,8 +24,19 @@ data class AssetData(
         owner = account,
         asset = asset,
         balance = balance,
-        walletId = null,
+        walletId = walletId.id,
         price = price,
         metadata = metadata,
     )
+
+    companion object {
+        fun from(assetInfo: AssetInfo, wallet: Wallet, account: Account) = AssetData(
+            asset = assetInfo.asset,
+            account = account,
+            walletId = WalletId(wallet.id),
+            balance = assetInfo.balance,
+            price = assetInfo.price,
+            metadata = assetInfo.metadata,
+        )
+    }
 }
