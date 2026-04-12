@@ -13,10 +13,8 @@ import com.gemwallet.android.testkit.mockAssetInfo
 import com.gemwallet.android.testkit.mockAssetPriceInfo
 import com.gemwallet.android.testkit.mockFiatQuote
 import com.gemwallet.android.testkit.mockWallet
-import com.wallet.core.primitives.Asset
 import com.wallet.core.primitives.AssetId
 import com.wallet.core.primitives.Currency
-import com.wallet.core.primitives.FiatQuote
 import com.wallet.core.primitives.FiatQuoteType
 import com.wallet.core.primitives.WalletId
 import io.mockk.coEvery
@@ -27,12 +25,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -117,6 +117,25 @@ class FiatViewModelTest {
                     amount = 50.0,
                 )
             }
+        } finally {
+            viewModel.viewModelScope.cancel()
+        }
+    }
+
+    @Test
+    fun `getUrl without resolved asset calls back with null instead of hanging`() = runTest(testDispatcher) {
+        assetInfoFlow.value = null
+
+        val viewModel = createViewModel()
+        var receivedUrl: String? = "initial"
+
+        try {
+            runCurrent()
+
+            viewModel.getUrl { url -> receivedUrl = url }
+            advanceUntilIdle()
+
+            assertEquals(null, receivedUrl)
         } finally {
             viewModel.viewModelScope.cancel()
         }
