@@ -46,6 +46,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
@@ -177,12 +179,9 @@ class AssetDetailsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun refreshAssetDetails(wallet: Wallet, assetId: AssetId) {
-        syncAssetInfo.syncAssetInfo(
-            assetId = assetId,
-            wallet = wallet,
-        )
-        syncTransactions.syncTransactions(wallet, assetId)
+    private suspend fun refreshAssetDetails(wallet: Wallet, assetId: AssetId) = coroutineScope {
+        launch { syncAssetInfo.syncAssetInfo(assetId = assetId, wallet = wallet) }
+        launch { syncTransactions.syncTransactions(wallet, assetId) }
     }
 
     private fun refreshPriceAlertsIfNeeded(assetId: AssetId) = viewModelScope.launch(Dispatchers.IO) {
