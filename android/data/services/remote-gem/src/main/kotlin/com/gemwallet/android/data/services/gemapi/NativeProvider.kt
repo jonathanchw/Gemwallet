@@ -37,7 +37,7 @@ class NativeProvider(
         }
         try {
             val response = httpClient.newCall(requestBuilder.build()).execute()
-            val data = response.body?.bytes() ?: byteArrayOf()
+            val data = response.body.bytes()
             val status = response.code.toUShort()
             AlienResponse(status, data)
         } catch (_: Throwable) {
