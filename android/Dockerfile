@@ -56,4 +56,20 @@ RUN --mount=type=cache,target=/root/.android \
         "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
         "ndk;${ANDROID_NDK_VERSION}"
 
+ENV ANDROID_NDK_HOME=${ANDROID_HOME}/ndk/${ANDROID_NDK_VERSION}
+ENV RUSTUP_HOME=/opt/rust/rustup
+ENV CARGO_HOME=/opt/rust/cargo
+ENV PATH="${CARGO_HOME}/bin:${PATH}"
+
+# Install Rust toolchain and Android targets for Gemstone native builds.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable \
+    && rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android \
+    && cargo install cargo-ndk@4.1.2 \
+    && rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git"
+
 CMD ["bash"]
