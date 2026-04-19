@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -66,6 +67,7 @@ internal fun SwapScene(
     onSelectPayPercent: (Int) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
 
     val showPercentBar = imeVisible && swapState.payItemInteraction.isAmountEditable && pay != null
 
@@ -81,10 +83,9 @@ internal fun SwapScene(
                     )
                 }
             }
-            swapState.isSwapButtonVisible -> {
+            else -> {
                 { SwapAction(swapState, onPrimaryAction) }
             }
-            else -> null
         },
         mainActionPadding = if (showPercentBar) PaddingValues(0.dp) else PaddingValues(
             horizontal = sceneContentPadding(),
