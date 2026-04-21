@@ -21,7 +21,6 @@ import com.gemwallet.android.domains.asset.chain
 import com.gemwallet.android.ext.feeUnitType
 import com.gemwallet.android.model.AssetInfo
 import com.gemwallet.android.ui.R
-import com.gemwallet.android.ui.components.dialog.SheetHeader
 import com.gemwallet.android.ui.components.image.IconWithBadge
 import com.gemwallet.android.ui.components.list_item.ListItem
 import com.gemwallet.android.ui.components.list_item.ListItemDefaults
@@ -58,12 +57,7 @@ fun FeeDetails(
     ModalBottomSheet(
         isVisible = isVisible,
         onDismissRequest = onCancel,
-        dragHandle = {
-            SheetHeader(
-                title = stringResource(R.string.transfer_network_fee),
-                onDismissRequest = onCancel,
-            )
-        },
+        title = stringResource(R.string.transfer_network_fee),
     ) {
         LazyColumn {
 
