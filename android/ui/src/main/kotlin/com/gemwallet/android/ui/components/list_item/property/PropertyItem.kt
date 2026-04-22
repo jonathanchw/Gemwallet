@@ -21,6 +21,7 @@ import com.gemwallet.android.ui.components.InfoButton
 import com.gemwallet.android.ui.components.InfoSheetEntity
 import com.gemwallet.android.ui.components.image.AsyncImage
 import com.gemwallet.android.ui.components.list_item.ChevronIcon
+import com.gemwallet.android.ui.components.list_item.ChevronIconDefaults
 import com.gemwallet.android.ui.components.list_item.ListItem
 import com.gemwallet.android.ui.components.list_item.ListItemDefaults
 import com.gemwallet.android.ui.models.ListPosition
@@ -28,7 +29,6 @@ import com.gemwallet.android.ui.theme.Spacer8
 import com.gemwallet.android.ui.theme.paddingMiddle
 import com.gemwallet.android.ui.theme.space8
 import com.gemwallet.android.ui.theme.smallIconSize
-import com.gemwallet.android.ui.theme.tinyIconSize
 
 @Composable
 fun PropertyItem(
@@ -214,8 +214,8 @@ fun DataBadgeChevron(isShowChevron: Boolean = true, content: (@Composable RowSco
             it()
         }
         if (isShowChevron) {
-            Spacer8()
-            ChevronIcon(modifier = Modifier.size(tinyIconSize))
+            Spacer(modifier = Modifier.width(ChevronIconDefaults.leadingSpacing))
+            ChevronIcon()
         }
     }
 }
