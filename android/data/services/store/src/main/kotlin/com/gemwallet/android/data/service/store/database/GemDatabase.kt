@@ -32,12 +32,11 @@ import com.gemwallet.android.data.service.store.database.entities.DbPriceAlert
 import com.gemwallet.android.data.service.store.database.entities.DbRecentActivity
 import com.gemwallet.android.data.service.store.database.entities.DbSession
 import com.gemwallet.android.data.service.store.database.entities.DbTransaction
-import com.gemwallet.android.data.service.store.database.entities.DbTransactionExtended
 import com.gemwallet.android.data.service.store.database.entities.DbTxSwapMetadata
 import com.gemwallet.android.data.service.store.database.entities.DbWallet
 
 @Database(
-    version = 70,
+    version = 71,
     entities = [
         DbWallet::class,
         DbAccount::class,
@@ -72,7 +71,6 @@ import com.gemwallet.android.data.service.store.database.entities.DbWallet
     ],
     views = [
         DbAssetInfo::class,
-        DbTransactionExtended::class,
     ]
 )
 @TypeConverters(StoreConverters::class)

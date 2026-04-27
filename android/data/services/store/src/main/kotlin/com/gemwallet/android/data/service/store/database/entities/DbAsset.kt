@@ -54,6 +54,14 @@ data class DbAssetBasicUpdate(
     @ColumnInfo("rank") val rank: Int = 0,
 )
 
+data class DbAssetProjection(
+    val id: String,
+    val name: String,
+    val symbol: String,
+    val decimals: Int,
+    val type: AssetType,
+)
+
 @Entity(
     tableName = "asset_links",
     primaryKeys = ["asset_id", "name"],
@@ -124,7 +132,15 @@ data class DbRecentAsset(
 
 fun List<DbAsset>.toDTO() = mapNotNull { it.toDTO() }
 
-fun DbAsset.toDTO(): Asset? {
+fun DbAsset.toDTO(): Asset? = DbAssetProjection(
+    id = id,
+    name = name,
+    symbol = symbol,
+    decimals = decimals,
+    type = type,
+).toDTO()
+
+fun DbAssetProjection.toDTO(): Asset? {
     return Asset(
         id = id.toAssetId() ?: return null,
         name = name,
