@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import com.gemwallet.android.domains.asset.chain
 import com.gemwallet.android.ext.toAssetId
 import com.gemwallet.android.ext.toIdentifier
@@ -96,22 +97,9 @@ data class DbAssetMarket(
 )
 
 @Entity(
-    tableName = "asset_wallet",
-    primaryKeys = ["asset_id", "wallet_id", "account_address"],
-    foreignKeys = [
-        ForeignKey(DbAsset::class, ["id"], ["asset_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DbWallet::class, ["id"], ["wallet_id"], onDelete = ForeignKey.CASCADE),
-    ],
-)
-data class DbAssetWallet(
-    @ColumnInfo("asset_id") val assetId: String,
-    @ColumnInfo("wallet_id") val walletId: String,
-    @ColumnInfo("account_address") val accountAddress: String,
-)
-
-@Entity(
     tableName = "recent_assets",
     primaryKeys = ["asset_id", "wallet_id", "type"],
+    indices = [Index("wallet_id")],
     foreignKeys = [
         ForeignKey(DbAsset::class, ["id"], ["asset_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DbWallet::class, ["id"], ["wallet_id"], onDelete = ForeignKey.CASCADE),

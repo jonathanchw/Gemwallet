@@ -5,12 +5,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.gemwallet.android.data.service.store.database.entities.DbAccount
 import com.gemwallet.android.data.service.store.database.entities.DbAsset
-import com.gemwallet.android.data.service.store.database.entities.DbAssetConfig
-import com.gemwallet.android.data.service.store.database.entities.DbAssetInfo
 import com.gemwallet.android.data.service.store.database.entities.DbAssetLink
 import com.gemwallet.android.data.service.store.database.entities.DbAssetMarket
 import com.gemwallet.android.data.service.store.database.entities.DbAssetPriority
-import com.gemwallet.android.data.service.store.database.entities.DbAssetWallet
 import com.gemwallet.android.data.service.store.database.entities.DbBalance
 import com.gemwallet.android.data.service.store.database.entities.DbBanner
 import com.gemwallet.android.data.service.store.database.entities.DbConnection
@@ -36,7 +33,7 @@ import com.gemwallet.android.data.service.store.database.entities.DbTxSwapMetada
 import com.gemwallet.android.data.service.store.database.entities.DbWallet
 
 @Database(
-    version = 71,
+    version = 72,
     entities = [
         DbWallet::class,
         DbAccount::class,
@@ -50,14 +47,12 @@ import com.gemwallet.android.data.service.store.database.entities.DbWallet
         DbDelegationBase::class,
         DbNode::class,
         DbSession::class,
-        DbAssetConfig::class,
         DbBanner::class,
         DbPriceAlert::class,
         DbNFTCollection::class,
         DbNFTAsset::class,
         DbNFTAssociation::class,
         DbAssetLink::class,
-        DbAssetWallet::class,
         DbAssetMarket::class,
         DbAssetPriority::class,
         DbFiatRate::class,
@@ -68,12 +63,9 @@ import com.gemwallet.android.data.service.store.database.entities.DbWallet
         DbPerpetualBalance::class,
         DbPerpetualMetadata::class,
         DbPerpetualPosition::class,
-    ],
-    views = [
-        DbAssetInfo::class,
     ]
 )
-@TypeConverters(StoreConverters::class)
+@TypeConverters(StoreConverters::class, ChainConverters::class)
 abstract class GemDatabase : RoomDatabase() {
     abstract fun walletsDao(): WalletsDao
 

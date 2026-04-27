@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 
 const val SESSION_REQUEST = """SELECT accounts.address FROM accounts, session
     WHERE accounts.wallet_id = session.wallet_id AND session.id = 1"""
-const val SESSION_CHAINS_REQUEST = """SELECT UPPER(accounts.chain) FROM accounts, session
+const val SESSION_CHAINS_REQUEST = """SELECT accounts.chain FROM accounts, session
     WHERE accounts.wallet_id = session.wallet_id AND session.id = 1"""
 const val CURRENT_WALLET_REQUEST = """SELECT wallet_id FROM session WHERE session.id = 1"""
 
@@ -55,7 +55,7 @@ private const val EXTENDED_SOURCE = """
     LEFT JOIN asset as to_asset ON swap.to_asset_id = to_asset.id
     WHERE (tx.owner IN ($SESSION_REQUEST) OR tx.recipient IN ($SESSION_REQUEST))
         AND tx.walletId IN ($CURRENT_WALLET_REQUEST)
-        AND UPPER(tx.feeAssetId) IN ($SESSION_CHAINS_REQUEST)
+        AND tx.feeAssetId IN ($SESSION_CHAINS_REQUEST)
 """
 
 @Dao
