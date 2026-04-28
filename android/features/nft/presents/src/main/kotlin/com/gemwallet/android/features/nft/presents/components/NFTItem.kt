@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,38 +35,39 @@ fun NFTItem(
     collectionIdAction: NftCollectionIdAction,
     assetIdAction: NftAssetIdAction,
 ) {
-    Card(
+    val itemShape = RoundedCornerShape(paddingDefault + paddingSmall)
+
+    Column(
         modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = paddingDefault)
+            .clip(itemShape)
             .clickable(onClick = { model.onClick(collectionIdAction, assetIdAction) })
-            .padding(start = paddingSmall, bottom = paddingDefault, end = paddingSmall),
-        colors = CardDefaults.cardColors().copy(containerColor = MaterialTheme.colorScheme.surface),
+            .padding(paddingSmall),
     ) {
-        Column {
-            Box {
-                NftImage(
-                    source = model.toImageSource(),
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(paddingDefault)),
-                )
-                val count = model.collectionSize
-                if (count != null) {
-                    CountBadge(
-                        count = count,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(space8),
-                    )
-                }
-            }
-            NftTitle(
-                name = model.name,
-                status = model.collection.status,
+        Box(modifier = Modifier.fillMaxWidth()) {
+            NftImage(
+                source = model.toImageSource(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = paddingSmall),
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(paddingDefault)),
             )
+            val count = model.collectionSize
+            if (count != null) {
+                CountBadge(
+                    count = count,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(space8),
+                )
+            }
         }
+        NftTitle(
+            name = model.name,
+            status = model.collection.status,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
