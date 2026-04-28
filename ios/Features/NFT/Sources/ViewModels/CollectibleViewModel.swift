@@ -129,7 +129,7 @@ public final class CollectibleViewModel {
     }
 
     var attributesTitle: String { Localized.Nft.properties }
-    var attributes: [NFTAttribute] { assetData.asset.attributes }
+    var attributes: [NFTAttributeViewModel] { assetData.asset.attributes.map { NFTAttributeViewModel(attribute: $0) } }
 
     var assetImage: AssetImage {
         NFTAssetViewModel(asset: assetData.asset).assetImage
@@ -162,6 +162,7 @@ public final class CollectibleViewModel {
                     items: [
                         .button(title: Localized.Nft.saveToPhotos, systemImage: SystemImage.gallery, action: onSelectSaveToGallery),
                         .button(title: Localized.Nft.setAsAvatar, systemImage: SystemImage.emoji, action: onSelectSetAsAvatar),
+                        .button(title: Localized.Common.refresh, systemImage: SystemImage.refresh, action: onSelectRefresh),
                         .button(title: Localized.Nft.Report.reportButtonTitle, role: .destructive, action: onSelectReport),
                     ],
                 ),
@@ -268,6 +269,18 @@ extension CollectibleViewModel {
 
     func onSelectReport() {
         isPresentingReportSheet = true
+    }
+
+    func onSelectRefresh() {
+        Task {
+            do {
+                try await nftService.refreshAsset(wallet: wallet, assetId: assetData.asset.id)
+                isPresentingToast = .success(Localized.Common.refresh)
+            } catch {
+                debugLog("Refresh nft asset error: \(error)")
+                isPresentingAlertMessage = AlertMessage(message: Localized.Errors.errorOccured)
+            }
+        }
     }
 
     func onReportComplete() {

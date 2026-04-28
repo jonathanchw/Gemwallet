@@ -18,6 +18,7 @@ public enum SystemImage {
     public static let network = "network"
     public static let globe = "globe"
     public static let share = "square.and.arrow.up"
+    public static let refresh = "arrow.clockwise"
     public static let lock = "lock"
     public static let delete = "trash"
     public static let checkmark = "checkmark"

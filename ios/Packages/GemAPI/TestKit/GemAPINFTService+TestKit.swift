@@ -13,6 +13,8 @@ public final class GemAPINFTServiceMock: GemAPINFTService, @unchecked Sendable {
 
     public func getDeviceNFTAssets(walletId _: String) async throws -> [NFTData] { nftAssets }
 
+    public func refreshNftAsset(walletId _: String, assetId _: String) async throws {}
+
     public func reportNft(report _: ReportNft) async throws {}
 
     public func setNFTAssets(_ nftAssets: [NFTData]) {
