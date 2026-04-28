@@ -6,9 +6,8 @@ import Localization
 import Primitives
 import PrimitivesTestKit
 import Style
-import Testing
-
 @testable import Swap
+import Testing
 
 struct SwapButtonViewModelTests {
     @Test

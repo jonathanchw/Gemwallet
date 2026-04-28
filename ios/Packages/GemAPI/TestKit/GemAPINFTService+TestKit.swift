@@ -11,7 +11,9 @@ public final class GemAPINFTServiceMock: GemAPINFTService, @unchecked Sendable {
         self.nftAssets = nftAssets
     }
 
-    public func getDeviceNFTAssets(walletId _: String) async throws -> [NFTData] { nftAssets }
+    public func getDeviceNFTAssets(walletId _: String) async throws -> [NFTData] {
+        nftAssets
+    }
 
     public func refreshNftAsset(walletId _: String, assetId _: String) async throws {}
 

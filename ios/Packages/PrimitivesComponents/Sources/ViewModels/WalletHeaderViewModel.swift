@@ -29,16 +29,27 @@ public struct WalletHeaderViewModel {
 // MARK: - HeaderViewModel
 
 extension WalletHeaderViewModel: HeaderViewModel {
-    public var isWatchWallet: Bool { walletType == .view }
-    public var title: String { totalValueViewModel.title }
-    public var assetImage: AssetImage? { .none }
+    public var isWatchWallet: Bool {
+        walletType == .view
+    }
+
+    public var title: String {
+        totalValueViewModel.title
+    }
+
+    public var assetImage: AssetImage? {
+        .none
+    }
+
     public var subtitle: String? {
         guard let amount = totalValueViewModel.pnlAmountText else { return nil }
         guard let percentage = totalValueViewModel.pnlPercentageText else { return amount }
         return "\(amount) (\(percentage))"
     }
 
-    public var subtitleColor: Color { totalValueViewModel.pnlColor }
+    public var subtitleColor: Color {
+        totalValueViewModel.pnlColor
+    }
 
     public var subtitleImage: Image? {
         Image(systemName: SystemImage.chartLineUptrendXyaxis)

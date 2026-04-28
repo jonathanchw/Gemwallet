@@ -58,7 +58,7 @@ public enum SystemImage {
     public static let chartLineUptrendXyaxis = "chart.line.uptrend.xyaxis"
     public static let checkmarkSealFill = "checkmark.seal.fill"
 
-    // specific to Gem style
+    /// specific to Gem style
     public static let errorOccurred = exclamationmarkTriangleFill
 }
 

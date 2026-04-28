@@ -35,7 +35,7 @@ public struct PerpetualScene: View {
                                         type: .currency,
                                         currencyCode: Currency.usd.rawValue,
                                     ),
-                                )
+                                ),
                             )
                         case let .error(error):
                             StateEmptyView(

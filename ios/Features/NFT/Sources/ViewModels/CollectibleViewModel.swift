@@ -47,7 +47,9 @@ public final class CollectibleViewModel {
         self.isPresentingSelectedAssetInput = isPresentingSelectedAssetInput
     }
 
-    var title: String { assetData.asset.name }
+    var title: String {
+        assetData.asset.name
+    }
 
     var imageContextMenuItems: [ContextMenuItemType] {
         guard isImageLoaded else { return [] }
@@ -104,7 +106,10 @@ public final class CollectibleViewModel {
         }
     }
 
-    var tokenIdValue: String { assetData.asset.tokenId }
+    var tokenIdValue: String {
+        assetData.asset.tokenId
+    }
+
     var tokenIdField: ListItemField {
         let text = if assetData.asset.tokenId.count > 16 {
             AddressFormatter(address: assetData.asset.tokenId, chain: assetData.asset.chain).value()
@@ -128,8 +133,13 @@ public final class CollectibleViewModel {
         }
     }
 
-    var attributesTitle: String { Localized.Nft.properties }
-    var attributes: [NFTAttributeViewModel] { assetData.asset.attributes.map { NFTAttributeViewModel(attribute: $0) } }
+    var attributesTitle: String {
+        Localized.Nft.properties
+    }
+
+    var attributes: [NFTAttributeViewModel] {
+        assetData.asset.attributes.map { NFTAttributeViewModel(attribute: $0) }
+    }
 
     var assetImage: AssetImage {
         NFTAssetViewModel(asset: assetData.asset).assetImage
@@ -297,7 +307,9 @@ extension CollectibleViewModel {
 
 extension CollectibleViewModel {
     private static let enabledChainTypes: Set<ChainType> = [.ethereum]
-    private var contractValue: String { assetData.collection.contractAddress }
+    private var contractValue: String {
+        assetData.collection.contractAddress
+    }
 
     private func openSettings() {
         guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }

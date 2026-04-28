@@ -2,6 +2,7 @@ import AvatarService
 import ExplorerService
 import Formatters
 import Foundation
+@testable import NFT
 import NFTServiceTestKit
 import Primitives
 import PrimitivesComponents
@@ -10,8 +11,6 @@ import Store
 import StoreTestKit
 import Testing
 import WalletServiceTestKit
-
-@testable import NFT
 
 @MainActor
 struct CollectibleViewModelTests {

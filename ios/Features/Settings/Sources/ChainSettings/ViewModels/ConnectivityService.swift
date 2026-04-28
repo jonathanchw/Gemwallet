@@ -3,7 +3,7 @@
 import Foundation
 import Primitives
 
-struct ConnectivityService: Sendable {
+struct ConnectivityService {
     private let session: URLSession
 
     init(

@@ -60,8 +60,13 @@ struct CandlestickChartViewModel {
         return (0 ..< Constants.yAxisTickCount).map { candleMin + Double($0) * step }
     }
 
-    private var candleMin: Double { candles.map(\.low).min() ?? 0 }
-    private var candleMax: Double { candles.map(\.high).max() ?? 1 }
+    private var candleMin: Double {
+        candles.map(\.low).min() ?? 0
+    }
+
+    private var candleMax: Double {
+        candles.map(\.high).max() ?? 1
+    }
 
     func formattedPrice(_ price: Double) -> String {
         formatter.string(double: price, symbol: nil)
@@ -78,8 +83,13 @@ struct CandlestickChartViewModel {
         }
     }
 
-    var currentPrice: Double? { candles.last?.close }
-    var currentPriceColor: Color { candles.last.map(candleColor(for:)) ?? Colors.gray }
+    var currentPrice: Double? {
+        candles.last?.close
+    }
+
+    var currentPriceColor: Color {
+        candles.last.map(candleColor(for:)) ?? Colors.gray
+    }
 
     func headerModel(for selectedCandle: ChartCandleStick?) -> ChartHeaderViewModel? {
         guard let target = selectedCandle ?? candles.last, let base = candles.first?.close else { return nil }

@@ -54,7 +54,10 @@ struct SwapButtonViewModel: StateButtonViewable {
         return .swap
     }
 
-    var icon: Image? { nil }
+    var icon: Image? {
+        nil
+    }
+
     var type: ButtonType {
         switch buttonAction {
         case .retryQuotes: swapState.quotes.isLoading ? .primary(swapState.quotes) : .primary(.normal)
@@ -65,9 +68,13 @@ struct SwapButtonViewModel: StateButtonViewable {
         }
     }
 
-    var isVisible: Bool { !swapState.quotes.isNoData }
+    var isVisible: Bool {
+        !swapState.quotes.isNoData
+    }
 
-    func action() { perform() }
+    func action() {
+        perform()
+    }
 }
 
 // MARK: - Private

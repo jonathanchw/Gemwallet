@@ -4,7 +4,7 @@ import Foundation
 import Localization
 import Primitives
 
-struct ConnectivityEndpoint: Identifiable, Sendable {
+struct ConnectivityEndpoint: Identifiable {
     let name: String
     let flag: String?
     let url: URL
@@ -21,7 +21,7 @@ struct ConnectivityEndpoint: Identifiable, Sendable {
     }
 
     var title: String {
-        [name, flag].compactMap { $0 }.joined(separator: " ")
+        [name, flag].compactMap(\.self).joined(separator: " ")
     }
 
     var host: String {
