@@ -1,7 +1,6 @@
 package com.gemwallet.android.features.nft.presents.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -9,6 +8,8 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,39 +36,43 @@ fun NFTItem(
     collectionIdAction: NftCollectionIdAction,
     assetIdAction: NftAssetIdAction,
 ) {
-    val itemShape = RoundedCornerShape(paddingDefault + paddingSmall)
-
-    Column(
+    Card(
+        onClick = { model.onClick(collectionIdAction, assetIdAction) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = paddingDefault)
-            .clip(itemShape)
-            .clickable(onClick = { model.onClick(collectionIdAction, assetIdAction) })
-            .padding(paddingSmall),
+            .padding(bottom = paddingDefault),
+        shape = RoundedCornerShape(paddingDefault + paddingSmall),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            NftImage(
-                source = model.toImageSource(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(paddingDefault)),
-            )
-            val count = model.collectionSize
-            if (count != null) {
-                CountBadge(
-                    count = count,
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingSmall),
+        ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                NftImage(
+                    source = model.toImageSource(),
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(space8),
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(paddingDefault)),
                 )
+                val count = model.collectionSize
+                if (count != null) {
+                    CountBadge(
+                        count = count,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(space8),
+                    )
+                }
             }
+            NftTitle(
+                name = model.name,
+                status = model.collection.status,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
-        NftTitle(
-            name = model.name,
-            status = model.collection.status,
-            modifier = Modifier.fillMaxWidth(),
-        )
     }
 }
 
