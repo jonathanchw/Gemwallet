@@ -31,7 +31,7 @@ import com.gemwallet.android.ui.components.list_item.property.PropertyItem
 import com.gemwallet.android.ui.components.list_item.property.PropertyTitleText
 import com.gemwallet.android.ui.models.ListPosition
 import com.gemwallet.android.ui.models.TransactionTypeFilter
-import com.gemwallet.android.ui.theme.listItemIconSize
+import com.gemwallet.android.ui.theme.iconSize
 import com.wallet.core.primitives.Chain
 
 @Composable
@@ -64,9 +64,9 @@ fun TransactionsFilter(
                             text = R.string.settings_networks_title,
                             trailing = {
                                 Image(
-                                    modifier = Modifier.size(listItemIconSize),
+                                    modifier = Modifier.size(iconSize),
                                     painter = painterResource(R.drawable.settings_networks),
-                                    contentDescription = "networks filter"
+                                    contentDescription = null,
                                 )
                             }
                         )
@@ -92,9 +92,9 @@ fun TransactionsFilter(
                             text = R.string.filter_types,
                             trailing = {
                                 Icon(
-                                    modifier = Modifier.size(listItemIconSize),
+                                    modifier = Modifier.size(iconSize),
                                     imageVector = Icons.AutoMirrored.Default.Article,
-                                    contentDescription = "networks filter"
+                                    contentDescription = null,
                                 )
                             }
                         )
