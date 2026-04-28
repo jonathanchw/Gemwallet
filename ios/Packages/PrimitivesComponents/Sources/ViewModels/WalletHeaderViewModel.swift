@@ -21,7 +21,7 @@ public struct WalletHeaderViewModel {
         self.walletType = walletType
         self.totalValue = totalValue
         self.bannerEventsViewModel = bannerEventsViewModel
-        let formatter = CurrencyFormatter(type: .currency, currencyCode: currencyCode)
+        let formatter = CurrencyFormatter(type: .fiat, currencyCode: currencyCode)
         totalValueViewModel = TotalValueViewModel(totalValue: totalValue, currencyFormatter: formatter)
     }
 }
