@@ -1,5 +1,6 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
+import BigInt
 import Components
 import Foundation
 import enum Gemstone.SwapperError
@@ -47,7 +48,7 @@ struct SwapButtonViewModel: StateButtonViewable {
     }
 
     var buttonAction: SwapButtonAction {
-        if let useMinAmount { return useMinAmount }
+        if let minimumAmountAction { return minimumAmountAction }
         if canRetrySwap { return .retrySwap }
         if canRetryQuotes { return .retryQuotes }
         if !isAmountValid, let fromAsset { return .insufficientBalance(asset: fromAsset.asset) }
@@ -80,12 +81,21 @@ struct SwapButtonViewModel: StateButtonViewable {
 // MARK: - Private
 
 extension SwapButtonViewModel {
-    private var useMinAmount: SwapButtonAction? {
+    private var minimumAmountAction: SwapButtonAction? {
+        guard let minimumAmount, let fromAsset else { return nil }
+        if minimumAmount > fromAsset.balance.available {
+            return .insufficientBalance(asset: fromAsset.asset)
+        }
+        return .useMinAmount(amount: minimumAmount.description, asset: fromAsset.asset)
+    }
+
+    private var minimumAmount: BigInt? {
         guard case let .error(error) = swapState.quotes,
               case let .InputAmountError(amount) = error as? SwapperError,
               let amount,
-              let fromAsset else { return nil }
-        return .useMinAmount(amount: amount, asset: fromAsset.asset)
+              let value = BigInt(amount),
+              value > 0 else { return nil }
+        return value
     }
 
     private var canRetryQuotes: Bool {

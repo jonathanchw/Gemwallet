@@ -1,6 +1,8 @@
 // Copyright (c). Gem Wallet. All rights reserved.
 
+import BigInt
 import Components
+import enum Gemstone.SwapperError
 import struct Gemstone.SwapperQuote
 import Localization
 import Primitives
@@ -49,6 +51,21 @@ struct SwapButtonViewModelTests {
 
         #expect(viewModel.buttonAction == SwapButtonAction.insufficientBalance(asset: asset.asset))
         #expect(viewModel.title == Localized.Transfer.insufficientBalance("BTC"))
+        #expect(viewModel.type == ButtonType.primary(.disabled))
+        #expect(viewModel.isVisible == true)
+    }
+
+    @Test
+    func insufficientBalanceWhenMinimumAmountExceedsBalance() {
+        let asset = AssetData.mock(
+            asset: .mockTron(),
+            balance: .mock(available: BigInt(18_900_023)),
+        )
+        let swapState = SwapState(quotes: .error(SwapperError.InputAmountError(minAmount: "22000000")))
+        let viewModel = SwapButtonViewModel.mock(swapState: swapState, fromAsset: asset)
+
+        #expect(viewModel.buttonAction == SwapButtonAction.insufficientBalance(asset: asset.asset))
+        #expect(viewModel.title == Localized.Transfer.insufficientBalance("TRX"))
         #expect(viewModel.type == ButtonType.primary(.disabled))
         #expect(viewModel.isVisible == true)
     }
